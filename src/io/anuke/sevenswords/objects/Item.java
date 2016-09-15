@@ -17,7 +17,7 @@ public class Item extends Parseable{
 	@Override
 	public void parse(HashMap<String, String> values){
 		String name = null;
-		ItemType type = ItemType.weapon;
+		ItemType type = ItemType.material;
 
 		name = (String)values.get("name");
 		

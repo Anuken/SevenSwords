@@ -15,7 +15,7 @@ public class Core{
 	public CommandHandler commands;
 	public ObjectHandler world;
 	public CombatHandler combat;
-	private HashMap<String, Player> players = new HashMap<String, Player>();
+	public HashMap<String, Player> players = new HashMap<String, Player>();
 	
 	public Core(TimedMessageHandler handler){
 		core = this;

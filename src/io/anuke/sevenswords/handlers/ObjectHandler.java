@@ -2,9 +2,7 @@ package io.anuke.sevenswords.handlers;
 
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
-import io.anuke.sevenswords.objects.Entity;
-import io.anuke.sevenswords.objects.Item;
-import io.anuke.sevenswords.objects.Location;
+import io.anuke.sevenswords.objects.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,6 +43,9 @@ public class ObjectHandler extends Handler{
 	public void reload(){
 		objects.clear();
 		load();
+		for(Player p : core.players.values()){
+			p.location = getLocation(p.location.name) == null ? getLocation("default") : getLocation(p.location.name);
+		}
 	}
 
 	public void load(){

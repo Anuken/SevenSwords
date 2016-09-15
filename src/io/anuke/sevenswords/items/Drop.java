@@ -12,6 +12,9 @@ public class Drop{
 		this.chance = chance;
 		this.quantity = quantity;
 		this.item = Core.core.world.getItem(item);
+		if(this.item == null){
+			throw new RuntimeException("Failure loading drop: item \"" + item + "\" not defined.");
+		}
 	}
 	
 	public String toString(){

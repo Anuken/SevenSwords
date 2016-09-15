@@ -1,0 +1,8 @@
+Name: Pig
+Health: 4
+Attack: 2
+Defense: 1
+XP: 6
+Drops: Raw_meat-1/8,Fly_Worms-1/40
+locations: farmlands
+exp: 6

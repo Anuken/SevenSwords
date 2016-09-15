@@ -15,5 +15,13 @@ public abstract class Parseable{
 	public String name(){
 		return MiscUtils.capitalize(name.replace("_", " "));
 	}
+	
+	public int getInt(String name){
+		return Integer.parseInt(values.get(name));
+	}
+	
+	public boolean has(String name){
+		return values.containsKey(name);
+	}
 
 }

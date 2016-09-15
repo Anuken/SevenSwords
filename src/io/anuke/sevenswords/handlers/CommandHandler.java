@@ -3,6 +3,7 @@ package io.anuke.sevenswords.handlers;
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.items.ItemStack;
+import io.anuke.sevenswords.items.ItemType;
 import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Location;
 import io.anuke.sevenswords.objects.Player;
@@ -211,6 +212,34 @@ public class CommandHandler extends Handler implements MessageListener{
 			send("Monsters: ");
 			for(Entity type : player.location.entities){
 				send("- " + type.name());
+			}
+		}else if(message.equals("eat")){
+			if(args.length == 1){
+				String object = args[0];
+				ItemStack remove = null;
+				for(int i = 0; i < player.inventory.size(); i ++){
+					ItemStack stack = player.inventory.get(i);
+					if(stack.item.name.equals(object) && stack.item.type == ItemType.consumable){
+						int energy = stack.item.getInt("energy");
+						int health = stack.item.getInt("health");
+						
+						send("You eat the " + stack.item.name() + ".");
+						if(energy != 0) send((energy > 0 ? "+" : "-") + energy + " Energy.");
+						if(health != 0) send((health > 0 ? "+" : "-") + health + " HP.");
+						player.energy = MiscUtils.clamp(player.energy + energy, 0, player.maxenergy);
+						player.health = MiscUtils.clamp(player.health + health, 0, player.maxhealth);
+						
+						remove = stack;
+						break;
+					}
+				}
+				if(remove != null){
+					player.inventory.remove(remove);
+				}else{
+					send("No item with that name found.");
+				}
+			}else{
+				send("Usage: -eat <object>");
 			}
 		}else if(message.equals("stats")){
 			send("Level " + player.level + ".");
