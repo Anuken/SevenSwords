@@ -219,7 +219,11 @@ public class CommandHandler extends Handler implements MessageListener{
 				ItemStack remove = null;
 				for(int i = 0; i < player.inventory.size(); i ++){
 					ItemStack stack = player.inventory.get(i);
-					if(stack.item.name.equals(object) && stack.item.type == ItemType.consumable){
+					if(stack.item.name.equals(object)){
+						if(stack.item.type != ItemType.consumable){
+							send("You cannot eat that item!");
+							return;
+						}
 						int energy = stack.item.getInt("energy");
 						int health = stack.item.getInt("health");
 						

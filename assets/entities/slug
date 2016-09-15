@@ -1,0 +1,6 @@
+name: slug
+health: 3
+attack: 1
+Defence: 0
+exp: 3
+drops: slime_paste-1/16

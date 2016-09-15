@@ -17,6 +17,9 @@ public class Location extends Parseable{
 			entities = new Entity[types.length];
 			for(int i = 0; i< types.length; i ++){
 				entities[i] = Core.core.world.getEntity(types[i]);
+				if(entities[i] == null){
+					throw new RuntimeException("Failure loading location: entity \"" + types[i] + "\" not defined.");
+				}
 			}
 		}
 	}

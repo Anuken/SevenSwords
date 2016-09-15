@@ -2,6 +2,7 @@ package io.anuke.sevenswords.handlers;
 
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
+import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.*;
 
 import java.nio.file.Files;
@@ -45,6 +46,9 @@ public class ObjectHandler extends Handler{
 		load();
 		for(Player p : core.players.values()){
 			p.location = getLocation(p.location.name) == null ? getLocation("default") : getLocation(p.location.name);
+			for(ItemStack stack : p.inventory){
+				stack.item = getItem(stack.item.name);
+			}
 		}
 	}
 

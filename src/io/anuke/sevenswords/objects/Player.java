@@ -13,6 +13,7 @@ public class Player{
 	public int level = 1, xp = 0;
 	public ArrayList<ItemStack> inventory = new ArrayList<ItemStack>();
 	public Battle battle;
+	public ItemStack[] equips = new ItemStack[6];
 	
 	public Player(Location location){
 		this.location = location;
