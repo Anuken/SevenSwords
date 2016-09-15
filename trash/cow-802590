@@ -1,0 +1,5 @@
+name: Cow
+health: 4
+attack: 1
+defence: 2
+drops: Cowhide-1/10,Raw_Beef-1/30

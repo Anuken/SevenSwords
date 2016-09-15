@@ -1,0 +1,6 @@
+name: goblin
+attack: 5
+defence: 0
+xp: 5
+maxhealth: 100
+drops: stick-5-10, twig-1/2
