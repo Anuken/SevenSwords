@@ -12,7 +12,7 @@ public class EntityInstance{
 	
 	public EntityInstance(Entity type){
 		this.type = type;
-		this.health = type.maxhealth;
+		this.health = type.health;
 	}
 	
 	public ArrayList<ItemStack> generateDrops(){

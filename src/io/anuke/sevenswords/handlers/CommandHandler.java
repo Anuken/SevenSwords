@@ -72,9 +72,9 @@ public class CommandHandler extends Handler implements MessageListener{
 
 		if(username.equals("TheRealTux") || username.equals("Anuken")){
 			if( !waitingForFile && message.equals("sendobject")){
-				if(args.length != 0){
+				if(args.length == 1){
 					String type = args[0];
-					filetype = core.world.getClass(type, args[1]);
+					filetype = core.world.getClass(type, type);
 					if(filetype != null){
 						waitingForFile = true;
 						send("Ready to recieve object.");
@@ -96,8 +96,8 @@ public class CommandHandler extends Handler implements MessageListener{
 							try{
 								Files.copy(p.path, Paths.get("trash", p.path.getFileName() + "-" + (int)(Math.random() * 999999)));
 								Files.delete(p.path);
-								core.world.objects.get(c).remove(args[1]);
 								send("Object \"" + p.name + "\" deleted.");
+								core.world.reload();
 							}catch(Exception e){
 								e.printStackTrace();
 								send("Error deleting file.");
@@ -162,12 +162,12 @@ public class CommandHandler extends Handler implements MessageListener{
 								}else{
 									Files.write(p.path, ("\n"+valuename + ": " + value).getBytes(), StandardOpenOption.APPEND);
 								}
+								core.world.reload();
 								send("Value \"" + valuename + "\" set to " + value + ".");
 							}catch(IOException e){
 								e.printStackTrace();
 								send("Error writing to file.");
 							}
-							core.world.reload();
 						}
 					}else{
 						send("Invalid object type.");

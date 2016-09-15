@@ -16,6 +16,6 @@ public class ItemStack{
 	}
 	
 	public String toString(){
-		return item.name + (amount == 1 ? "" : "x" +amount);
+		return item.name() + (amount == 1 ? "" : " x" +amount);
 	}
 }

@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ObjectHandler extends Handler{
-	public final Path basePath = Paths.get(System.getProperty("user.home"), "workspace/MonsterFightBot/assets");
-	//public HashMap<String, Parseable> objects = new HashMap<String, Parseable>();
+	public final Path basePath = Paths.get(System.getProperty("user.home"), "workspace/SevenSwords/assets");
 	public HashMap<Class<? extends Parseable>, HashMap<String, Parseable>> objects = new HashMap<Class<? extends Parseable>, HashMap<String, Parseable>>();
 	
 	public <T extends Parseable> T get(String name, Class<T> c){
@@ -55,6 +54,7 @@ public class ObjectHandler extends Handler{
 			loadType(Location.class);
 		}catch (Exception e){
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 	

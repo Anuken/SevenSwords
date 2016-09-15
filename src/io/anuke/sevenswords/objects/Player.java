@@ -5,6 +5,7 @@ import io.anuke.sevenswords.entities.Battle;
 import io.anuke.sevenswords.items.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Player{
 	public Location location;
@@ -15,6 +16,22 @@ public class Player{
 	
 	public Player(Location location){
 		this.location = location;
+	}
+	
+	public void addItems(Collection<ItemStack> items){
+		for(ItemStack stack : items){
+			addItem(stack);
+		}
+	}
+	
+	public void addItem(ItemStack stack){
+		for(int i = 0; i < inventory.size(); i ++){
+			if(inventory.get(i).item == stack.item){
+				inventory.get(i).amount += stack.amount;
+				return;
+			}
+		}
+		inventory.add(stack);
 	}
 	
 	public void send(String string){

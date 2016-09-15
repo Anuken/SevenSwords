@@ -1,7 +1,8 @@
 package io.anuke.sevenswords.handlers;
 
 import io.anuke.sevenswords.Core;
-import io.anuke.sevenswords.entities.*;
+import io.anuke.sevenswords.entities.Battle;
+import io.anuke.sevenswords.entities.EntityInstance;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Player;
@@ -53,7 +54,10 @@ public class CombatHandler extends Handler{
 			message.append("\n- " + stack);
 		}
 
-		player.inventory.addAll(drops);
+		player.addItems(drops);
+		
+		message.append("\n+" + player.battle.entity.type.exp + " EXP.");
+		player.xp += player.battle.entity.type.exp;
 	}
 
 	private void runDefeat(Player player, StringBuilder message){

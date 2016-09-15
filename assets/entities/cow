@@ -1,5 +1,5 @@
 name: Cow
-health: 4
+health: 20
 attack: 1
 defence: 2
 exp: 6

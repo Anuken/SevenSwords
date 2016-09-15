@@ -13,7 +13,7 @@ public abstract class Parseable{
 	public abstract void parse(HashMap<String, String> values);
 	
 	public String name(){
-		return MiscUtils.capitalize(name);
+		return MiscUtils.capitalize(name.replace("_", " "));
 	}
 
 }

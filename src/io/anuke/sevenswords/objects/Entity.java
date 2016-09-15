@@ -11,13 +11,13 @@ import net.pixelstatic.utils.MiscUtils;
 
 public class Entity extends Parseable{
 	public String name;
-	public int maxhealth, attack, defence, exp;
+	public int health, attack, defence, exp;
 	public ArrayList<Drop> drops = new ArrayList<Drop>();
 	public HashMap<String, Boolean> properties = new HashMap<String, Boolean>();
 	public HashMap<String, String> values = new HashMap<String, String>();
 
 	public String toString(){
-		return String.format("EntityType: %s, drops: " + drops + ", maxhealth: %d, attack: %d, defence: %d, XP drop: %d", name, maxhealth, attack, defence, exp);
+		return String.format("EntityType: %s, drops: " + drops + ", maxhealth: %d, attack: %d, defence: %d, XP drop: %d", name, health, attack, defence, exp);
 	}
 
 	public String name(){
