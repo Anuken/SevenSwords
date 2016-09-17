@@ -1,9 +1,9 @@
 package io.anuke.sevenswords.entities;
 
+import io.anuke.utils.MiscUtils;
+
 import java.nio.file.Path;
 import java.util.HashMap;
-
-import net.pixelstatic.utils.MiscUtils;
 
 public abstract class Parseable{
 	public HashMap<String, String> values;

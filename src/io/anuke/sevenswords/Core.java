@@ -4,10 +4,9 @@ import io.anuke.sevenswords.handlers.CombatHandler;
 import io.anuke.sevenswords.handlers.CommandHandler;
 import io.anuke.sevenswords.handlers.ObjectHandler;
 import io.anuke.sevenswords.objects.Player;
+import io.anuke.utils.bots.TimedMessageHandler;
 
 import java.util.HashMap;
-
-import net.pixelstatic.utils.bots.TimedMessageHandler;
 
 public class Core{
 	public static Core core;

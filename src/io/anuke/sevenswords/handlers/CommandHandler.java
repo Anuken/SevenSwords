@@ -7,15 +7,14 @@ import io.anuke.sevenswords.items.ItemType;
 import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Location;
 import io.anuke.sevenswords.objects.Player;
+import io.anuke.utils.MiscUtils;
+import io.anuke.utils.bots.MessageHandler.MessageListener;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Stream;
-
-import net.pixelstatic.utils.MiscUtils;
-import net.pixelstatic.utils.bots.MessageHandler.MessageListener;
 
 public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;
@@ -163,8 +162,14 @@ public class CommandHandler extends Handler implements MessageListener{
 								}else{
 									Files.write(p.path, ("\n"+valuename + ": " + value).getBytes(), StandardOpenOption.APPEND);
 								}
-								core.world.reload();
-								send("Value \"" + valuename + "\" set to " + value + ".");
+								try{
+									core.world.createObject(c, p.path);
+									core.world.reload();
+									send("Value \"" + valuename + "\" set to " + value + ".");
+								}catch (Exception e){
+									send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+									e.printStackTrace();
+								}
 							}catch(IOException e){
 								e.printStackTrace();
 								send("Error writing to file.");
