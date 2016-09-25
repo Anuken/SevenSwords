@@ -14,12 +14,14 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;
 	private boolean waitingForFile;
 	private Class<?> filetype;
+	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y");
 
 	public CommandHandler(Core world){
 		super(world);
@@ -28,7 +30,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	@Override
 	public void onMessageRecieved(String message, String username, String chatid, String userid, String messageid){
 
-		if(waitingForFile && (username.equals("TheRealTux") || username.equals("Anuken"))){
+		if(waitingForFile && (admins.contains(username))){
 			lastid = chatid;
 			if(message != null) fileRecieved(message);
 		}
@@ -70,7 +72,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	private void handleCommand(String chatid, String username, String message, String[] args, String userid){
 		Player player = core.getPlayer(userid);
 
-		if(username.equals("TheRealTux") || username.equals("Anuken")){
+		if(admins.contains(username)){
 			if( !waitingForFile && message.equals("sendobject")){
 				if(args.length == 1){
 					String type = args[0];
@@ -218,6 +220,30 @@ public class CommandHandler extends Handler implements MessageListener{
 			for(Entity type : player.location.entities){
 				send("- " + type.name());
 			}
+		}else if(message.equals("equips") || message.equals("equipment")){
+			send("Equipment: ");
+			for(int i = 0; i < player.equips.length; i ++){
+				send(Player.equipnames[i] + ": " + (player.equips[i] == null ? "None" : player.equips[i].item.name()));
+			}
+		}else if(message.equals("equip")){
+			if(args.length == 1){
+				String name = args[0];
+				ItemStack found = null;
+				for(ItemStack stack : player.inventory){
+					if(stack.item.type.name().equals(name)){
+						found = stack;
+						break;
+					}
+				}
+				
+				if(found != null){
+					send(player.tryEquip(found));
+				}else{
+					send("You don't have that item in your inventory.");
+				}
+			}else{
+				send("Usage: -equip <item name>");
+			}
 		}else if(message.equals("eat")){
 			if(args.length == 1){
 				String object = args[0];
@@ -233,8 +259,8 @@ public class CommandHandler extends Handler implements MessageListener{
 						int health = stack.item.getInt("health");
 						
 						send("You eat the " + stack.item.name() + ".");
-						if(energy != 0) send((energy > 0 ? "+" : "-") + energy + " Energy.");
-						if(health != 0) send((health > 0 ? "+" : "-") + health + " HP.");
+						if(energy != 0) send((energy > 0 ? "+" : "") + energy + " Energy.");
+						if(health != 0) send((health > 0 ? "+" : "") + health + " HP.");
 						player.energy = MiscUtils.clamp(player.energy + energy, 0, player.maxenergy);
 						player.health = MiscUtils.clamp(player.health + health, 0, player.maxhealth);
 						
@@ -260,8 +286,9 @@ public class CommandHandler extends Handler implements MessageListener{
 				send("Your inventory is empty.");
 			}else{
 				send("Inventory: ");
+				int i = 0;
 				for(ItemStack item : player.inventory){
-					send("- " + item.toString());
+					send("- " + item.toString() + " [" + i++ + "]");
 				}
 			}
 		}else if(message.equals("help")){

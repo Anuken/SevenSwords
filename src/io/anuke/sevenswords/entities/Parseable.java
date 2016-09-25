@@ -17,6 +17,7 @@ public abstract class Parseable{
 	}
 	
 	public int getInt(String name){
+		if(!values.containsKey(name)) return 0;
 		return Integer.parseInt(values.get(name));
 	}
 	

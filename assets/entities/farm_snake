@@ -1,0 +1,6 @@
+name: Farm_Snake
+health: 6
+attack: 3
+defence: 0
+exp: 5
+loot: snake_skin-1/30,serpent's_tooth-1/180
