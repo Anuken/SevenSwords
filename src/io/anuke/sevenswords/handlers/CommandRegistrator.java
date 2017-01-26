@@ -1,18 +1,21 @@
 package io.anuke.sevenswords.handlers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.handlers.CommandHandler.Command;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.items.ItemType;
-import io.anuke.sevenswords.objects.Entity;
-import io.anuke.sevenswords.objects.Location;
-import io.anuke.sevenswords.objects.Player;
+import io.anuke.sevenswords.objects.*;
 import io.anuke.sevenswords.objects.Player.EquipSlot;
 import io.anuke.ucore.UCore;
 import io.anuke.utils.MiscUtils;
@@ -135,7 +138,7 @@ public class CommandRegistrator{
 		
 		cmd("attack", "<monster>", (args)->{
 			if(player().attacking()){
-				send("You are already in battle!");
+				send("You are already in battle! Use -leave to stop the fight.");
 				return;
 			}
 			
@@ -152,7 +155,35 @@ public class CommandRegistrator{
 		});
 		
 		
-		admincmd("ivalues", "<item-type>", (args)->{
+		cmd("leave", ()->{
+			if(!player().attacking()){
+				send("You are not in battle!");
+			}else{
+				core().combat.stopBattle(player());
+			}
+		});
+		
+		
+		admincmd("adminhelp", "", (args)->{
+			send("Admin Commands:");
+			for(Command command : handler.getAdminCommandList()){
+				send("-" + command.text + " " + command.params);
+			}
+		});
+		
+		
+		admincmd("spawn", "<item-type>", (args)->{
+			Item item = core().world.getItem(args[0]);
+			if(item != null){
+				player().addItem(new ItemStack(item));
+				send("Spawning in 1x " + item.uncappedName() + ".");
+			}else{
+				send("Item type not found.");
+			}
+		});
+		
+		
+		admincmd("getitem", "<item-type>", (args)->{
 			String string = args[0];
 			if(core().world.getItem(string) != null){
 				send((core().world.getItem(string).values).toString());
@@ -162,7 +193,7 @@ public class CommandRegistrator{
 		});
 		
 		
-		admincmd("evalues", "<entity-type>", (args)->{
+		admincmd("getentity", "<entity-type>", (args)->{
 			String string = args[0];
 			if(core().world.getEntity(string) != null){
 				send((core().world.getEntity(string).values).toString());
@@ -176,6 +207,112 @@ public class CommandRegistrator{
 			for(HashMap<?, Parseable> map : core().world.objects.values())
 				for(Parseable p : map.values())
 					send("-" + p.name + " [" + p.getClass().getSimpleName() + "]");
+		});
+		
+		admincmd("reload", "", (args)->{
+			core().world.reload();
+			send("Reloaded world succesfully.");
+		});
+		
+		admincmd("sendobject", "<type>", (args)->{
+			String type = args[0];
+			handler.filetype = core().world.getClass(type, type);
+			if(handler.filetype != null){
+				handler.waitingForFile = true;
+				send("Ready to recieve object.");
+			}else{
+				send("Invalid object type.");
+			}
+		});
+		
+		admincmd("deleteobject", "<type> <name>", (args)->{
+			String type = args[0];
+			Class<Parseable> c = core().world.getClass(type, args[1]);
+			if(c != null){
+				Parseable p = core().world.get(args[1], c);
+				if(p == null){
+					send("No object with that name found.");
+				}else{
+					try{
+						Files.copy(p.path, Paths.get("trash", p.path.getFileName() + "-" + (int) (Math.random() * 999999)));
+						Files.delete(p.path);
+						send("Object \"" + p.name + "\" deleted.");
+						core().world.reload();
+					}catch(Exception e){
+						e.printStackTrace();
+						send("Error deleting file.");
+					}
+				}
+			}else{
+				send("Invalid object type.");
+			}
+		});
+		
+		admincmd("getobject", "<type> <name>", (args)->{
+			String type = args[0];
+			Class<Parseable> c = core().world.getClass(type, args[1]);
+			if(c != null){
+				Parseable p = core().world.get(args[1], c.asSubclass(Parseable.class));
+				if(p == null){
+					send("No object with that name found.");
+				}else{
+					try{
+						Stream<String> stream = Files.lines(p.path);
+						stream.forEach((String line) -> {
+							send(line);
+						});
+						stream.close();
+					}catch(Exception e){
+						e.printStackTrace();
+						send("Error reading lines.");
+					}
+				}
+			}else{
+				send("Invalid object type.");
+			}
+		});
+		
+		admincmd("set", "<type> <name> <value-name> <value>", (args)->{
+			String type = args[0];
+			Class<Parseable> c = core().world.getClass(type, args[1]);
+			if(c != null){
+				Parseable p = core().world.get(args[1], c.asSubclass(Parseable.class));
+				if(p == null){
+					send("No object with that name found.");
+				}else{
+					String valuename = args[2];
+					String value = args[3];
+					try{
+						if(p.values.containsKey(valuename)){
+							StringBuilder lines = new StringBuilder();
+							Stream<String> stream = Files.lines(p.path);
+							stream.forEach((String line) -> {
+								if(line.toLowerCase().startsWith(valuename)){
+									line = valuename + ": " + value;
+								}
+								lines.append(line + "\n");
+							});
+							stream.close();
+							Files.write(p.path, lines.toString().getBytes());
+						}else{
+							Files.write(p.path, ("\n" + valuename + ": " + value).getBytes(), StandardOpenOption.APPEND);
+						}
+						try{
+							core().world.createObject(c, p.path);
+							core().world.reload();
+							send("Value \"" + valuename + "\" set to " + value + ".");
+						}catch(Exception e){
+							send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+							e.printStackTrace();
+						}
+					}catch(IOException e){
+						e.printStackTrace();
+						send("Error writing to file.");
+					}
+				}
+			}else{
+				send("Invalid object type.");
+			}
 		});
 	}
 	

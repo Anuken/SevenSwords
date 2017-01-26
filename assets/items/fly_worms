@@ -1,1 +1,4 @@
 name: fly_worms
+type: consumable
+energy: 50
+health: -20

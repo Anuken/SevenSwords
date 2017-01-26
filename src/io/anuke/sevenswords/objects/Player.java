@@ -61,7 +61,7 @@ public class Player{
 	public String tryEquip(ItemStack stack){
 		int slot = -1;
 		for(int i = 0; i < equiptypes.length; i ++){
-			if(stack.item.type == equiptypes[i]){
+			if(stack.item.type == ItemType.valueOf(EquipSlot.values()[i].name())){
 				slot = i;
 				break;
 			}

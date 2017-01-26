@@ -1,9 +1,9 @@
 package io.anuke.sevenswords.entities;
 
-import io.anuke.utils.MiscUtils;
-
 import java.nio.file.Path;
 import java.util.HashMap;
+
+import io.anuke.sevenswords.SevenUtils;
 
 public abstract class Parseable{
 	public HashMap<String, String> values;
@@ -13,7 +13,11 @@ public abstract class Parseable{
 	public abstract void parse(HashMap<String, String> values);
 	
 	public String name(){
-		return MiscUtils.capitalize(name.replace("_", " "));
+		return SevenUtils.capitalize(name);
+	}
+	
+	public String uncappedName(){
+		return name.replace("_", " ");
 	}
 	
 	public int getInt(String name){

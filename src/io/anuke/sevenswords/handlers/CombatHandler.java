@@ -17,10 +17,15 @@ public class CombatHandler extends Handler{
 	}
 
 	public void attack(String chatid, Player player, Entity type){
-		player.battle = new Battle(chatid, player, new EntityInstance(type));
 		Thread thread = new Thread(new AttackTask(player));
+		player.battle = new Battle(chatid, player, thread, new EntityInstance(type));
 		thread.setDaemon(true);
 		thread.start();
+	}
+	
+	public void stopBattle(Player player){
+		player.battle.stopFlag = true;
+		player.battle.thread.interrupt();
 	}
 
 	private class AttackTask implements Runnable{
@@ -33,6 +38,12 @@ public class CombatHandler extends Handler{
 		@Override
 		public void run(){
 			while(true){
+				if(player.battle.stopFlag){
+					Core.core.messages.edit("Battle ended prematurely - you have left the fight.", player.battle.chatid, player.battle.messageid);
+					player.battle = null;
+					break;
+				}
+				
 				if(runRound(player)){
 					player.battle = null;
 					player.energy -= 5;
@@ -48,7 +59,7 @@ public class CombatHandler extends Handler{
 
 	private void runVictory(Player player, StringBuilder message){
 		ArrayList<ItemStack> drops = player.battle.entity.generateDrops();
-		message.append("\nYou have killed the " + player.battle.entity.type.name() + (drops.size() == 0 ? "!" : "!\nLoot:"));
+		message.append("\nYou have killed the " + player.battle.entity.type.uncappedName() + (drops.size() == 0 ? "." : ".\nLoot:"));
 
 		for(ItemStack stack : drops){
 			message.append("\n- " + stack);
