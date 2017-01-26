@@ -1,14 +1,11 @@
 package io.anuke.sevenswords;
 
-import io.anuke.utils.bots.TimedMessageHandler;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.json.JSONObject;
-import org.telegram.telegrambots.TelegramApiException;
+import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -16,7 +13,11 @@ import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.updateshandlers.SentCallback;
+
+import io.anuke.utils.bots.TimedMessageHandler;
 
 public class TelegramMessageSender extends TimedMessageHandler{
 	Bot bot;
@@ -24,6 +25,7 @@ public class TelegramMessageSender extends TimedMessageHandler{
 	String token;
 
 	public static void main(String[] args){
+		ApiContextInitializer.init();
 		new Core(new TelegramMessageSender());
 	}
 
@@ -33,7 +35,7 @@ public class TelegramMessageSender extends TimedMessageHandler{
 			System.out.println("Starting bot...");
 			
 			
-			List<String> list = Files.readAllLines(Paths.get(System.getProperty("user.home"), "workspace").resolve("token"));
+			List<String> list = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Documents/eclipse").resolve("token.dat"));
 			token = list.get(0);
 			
 			TelegramBotsApi api = new TelegramBotsApi();
@@ -64,19 +66,19 @@ public class TelegramMessageSender extends TimedMessageHandler{
 				new SentCallback<Message>(){
 
 					@Override
-					public void onResult(BotApiMethod<Message> method, JSONObject jsonObject){
+					public void onError(BotApiMethod<Message> arg0, TelegramApiRequestException arg1){
 						// TODO Auto-generated method stub
 						
 					}
 
 					@Override
-					public void onError(BotApiMethod<Message> method, JSONObject jsonObject){
+					public void onException(BotApiMethod<Message> arg0, Exception arg1){
 						// TODO Auto-generated method stub
 						
 					}
 
 					@Override
-					public void onException(BotApiMethod<Message> method, Exception exception){
+					public void onResult(BotApiMethod<Message> arg0, Message arg1){
 						// TODO Auto-generated method stub
 						
 					}
@@ -112,7 +114,6 @@ public class TelegramMessageSender extends TimedMessageHandler{
 
 	@Override
 	public void sendFile(File file, String chatid){
-		// TODO Auto-generated method stub
 		
 	}
 

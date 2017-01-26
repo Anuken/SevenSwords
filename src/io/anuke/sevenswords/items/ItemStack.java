@@ -15,6 +15,10 @@ public class ItemStack{
 		this(item, 1);
 	}
 	
+	public boolean nameIs(String string){
+		return item.name.equals(string);
+	}
+	
 	public String toString(){
 		return item.name() + (amount == 1 ? "" : " x" +amount);
 	}

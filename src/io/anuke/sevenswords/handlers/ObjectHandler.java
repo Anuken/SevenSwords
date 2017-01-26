@@ -1,18 +1,18 @@
 package io.anuke.sevenswords.handlers;
 
-import io.anuke.sevenswords.Core;
-import io.anuke.sevenswords.entities.Parseable;
-import io.anuke.sevenswords.items.ItemStack;
-import io.anuke.sevenswords.objects.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
+import io.anuke.sevenswords.Core;
+import io.anuke.sevenswords.entities.Parseable;
+import io.anuke.sevenswords.items.ItemStack;
+import io.anuke.sevenswords.objects.*;
+
 public class ObjectHandler extends Handler{
-	public final Path basePath = Paths.get(System.getProperty("user.home"), "workspace/SevenSwords/assets");
+	public final Path basePath = Paths.get(System.getProperty("user.home"), "/Projects/SevenSwords/assets");
 	public HashMap<Class<? extends Parseable>, HashMap<String, Parseable>> objects = new HashMap<Class<? extends Parseable>, HashMap<String, Parseable>>();
 	
 	public <T extends Parseable> T get(String name, Class<T> c){

@@ -1,31 +1,53 @@
 package io.anuke.sevenswords.objects;
 
-import static io.anuke.sevenswords.items.ItemType.amulet;
-import static io.anuke.sevenswords.items.ItemType.armor;
-import static io.anuke.sevenswords.items.ItemType.boots;
-import static io.anuke.sevenswords.items.ItemType.head;
-import static io.anuke.sevenswords.items.ItemType.offhand;
-import static io.anuke.sevenswords.items.ItemType.weapon;
+import static io.anuke.sevenswords.items.ItemType.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Battle;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.items.ItemType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class Player{
-	public static String[] equipnames = {"Weapon","Head", "Armor", "Boots", "Amulet", "Off-Hand"};
-	public static ItemType[] equiptypes = {weapon, head, armor, boots, amulet, offhand};
+	public static ItemType[] equiptypes = {weapon, helm, armor, boots, amulet, offhand};
+	public static double exponent = 2, scale = 100;
 	public Location location;
 	public int health = 100, energy = 100, maxhealth = 100, maxenergy = 100;
-	public int level = 1, xp = 0;
+	public int level = 0;
+	public long xp = 0;
 	public ArrayList<ItemStack> inventory = new ArrayList<ItemStack>();
 	public Battle battle;
 	public ItemStack[] equips = new ItemStack[6];
 	
 	public Player(Location location){
 		this.location = location;
+	}
+	
+	public ItemStack findItem(Predicate<ItemStack> pred){
+		for(ItemStack stack : inventory){
+			if(pred.test(stack)){
+				return stack;
+			}
+		}
+		return null;
+	}
+	
+	
+	public ItemStack findItem(String name){
+		return findItem((stack)->{return stack.nameIs(name);});
+	}
+	
+	public void useItem(String name, Consumer<ItemStack> found, Runnable notFound){
+		ItemStack item = findItem((stack)->{return stack.nameIs(name);});
+		if(item == null){
+			found.accept(item);
+		}else{
+			notFound.run();
+		}
 	}
 	
 	public boolean tryEquip(int slot, ItemStack stack){
@@ -51,52 +73,12 @@ public class Player{
 		return "Item equipped.";
 	}
 	
-	public ItemStack getWeapon(){
-		return equips[0];
+	public void setEquip(EquipSlot slot, ItemStack stack){
+		equips[slot.ordinal()] = stack;
 	}
 	
-	public ItemStack getHead(){
-		return equips[1];
-	}
-	
-	public ItemStack getArmor(){
-		return equips[2];
-	}
-	
-	public ItemStack getBoots(){
-		return equips[3];
-	}
-	
-	public ItemStack getAmulet(){
-		return equips[4];
-	}
-	
-	public ItemStack getOffhand(){
-		return equips[5];
-	}
-	
-	public void setWeapon(ItemStack stack){
-		equips[0] = stack;
-	}
-	
-	public void setHead(ItemStack stack){
-		equips[1] = stack;
-	}
-	
-	public void setArmor(ItemStack stack){
-		equips[2] = stack;
-	}
-	
-	public void setBoots(ItemStack stack){
-		equips[3] = stack;
-	}
-	
-	public void setAmulet(ItemStack stack){
-		equips[4] = stack;
-	}
-	
-	public void setOffhand(ItemStack stack){
-		equips[5] = stack;
+	public ItemStack getEquip(EquipSlot slot){
+		return equips[slot.ordinal()];
 	}
 	
 	public void addItems(Collection<ItemStack> items){
@@ -128,10 +110,40 @@ public class Player{
 	}
 	
 	public int getDefense(){
-		return 1;
+		int def = 0;
+		
+		for(ItemStack stack : equips){
+			if(stack != null)
+			def += stack.item.getInt("defense");
+		}
+		
+		return 1 + def;
 	}
 	
 	public int getEndurance(){
 		return 1;
+	}
+	
+	public void addXP(int amount){
+		xp += amount;
+		level = xpToLevel(xp);
+	}
+	
+	public int levelToXP(int i){
+		return (int)(Math.pow(i, exponent) * scale);
+	}
+	
+	public int xpToLevel(long xp){
+		return (int)Math.pow(xp/scale, 1f/exponent);
+	}
+	
+	static public enum EquipSlot{
+		weapon("Weapon"), offhand("Off-Hand"), helm("Helm"), armor("Armor"), boots("Boots"), amulet("Amulet");
+		
+		public final String name;
+		
+		private EquipSlot(String name){
+			this.name = name;
+		}
 	}
 }

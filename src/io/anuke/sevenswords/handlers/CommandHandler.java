@@ -1,30 +1,28 @@
 package io.anuke.sevenswords.handlers;
 
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
-import io.anuke.sevenswords.items.ItemStack;
-import io.anuke.sevenswords.items.ItemType;
-import io.anuke.sevenswords.objects.Entity;
-import io.anuke.sevenswords.objects.Location;
-import io.anuke.sevenswords.objects.Player;
-import io.anuke.utils.MiscUtils;
 import io.anuke.utils.bots.MessageHandler.MessageListener;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;
 	private boolean waitingForFile;
 	private Class<?> filetype;
 	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y");
+	private List<Command> commands = new ArrayList<Command>();
+	private List<Command> adminCommands = new ArrayList<Command>();
 
-	public CommandHandler(Core world){
+	public CommandHandler(Core world) {
 		super(world);
+		
+		CommandRegistrator.handler = this;
+		CommandRegistrator.register();
 	}
 
 	@Override
@@ -32,10 +30,12 @@ public class CommandHandler extends Handler implements MessageListener{
 
 		if(waitingForFile && (admins.contains(username))){
 			lastid = chatid;
-			if(message != null) fileRecieved(message);
+			if(message != null)
+				fileRecieved(message);
 		}
 
-		if(message == null || ( !message.startsWith("-"))) return;
+		if(message == null || (!message.startsWith("-")))
+			return;
 
 		message = message.substring(1);
 		message = message.toLowerCase();
@@ -45,7 +45,7 @@ public class CommandHandler extends Handler implements MessageListener{
 		String[] args = message.split(" ");
 		message = args[0];
 		args = Arrays.copyOfRange(args, 1, args.length);
-
+		
 		handleCommand(chatid, username, message, args, userid);
 	}
 
@@ -70,10 +70,21 @@ public class CommandHandler extends Handler implements MessageListener{
 	}
 
 	private void handleCommand(String chatid, String username, String message, String[] args, String userid){
-		Player player = core.getPlayer(userid);
+		for(Command command : commands){
+			if(command.text.equals(message)){
+				if(args.length == command.paramLength){
+					command.runner.accept(args);
+				}else{
+					send("Usage: -"+ command.text +" "+command.params);
+				}
+				break;
+			}
+		}
+		
+		/*
 
 		if(admins.contains(username)){
-			if( !waitingForFile && message.equals("sendobject")){
+			if(!waitingForFile && message.equals("sendobject")){
 				if(args.length == 1){
 					String type = args[0];
 					filetype = core.world.getClass(type, type);
@@ -96,7 +107,7 @@ public class CommandHandler extends Handler implements MessageListener{
 							send("No object with that name found.");
 						}else{
 							try{
-								Files.copy(p.path, Paths.get("trash", p.path.getFileName() + "-" + (int)(Math.random() * 999999)));
+								Files.copy(p.path, Paths.get("trash", p.path.getFileName() + "-" + (int) (Math.random() * 999999)));
 								Files.delete(p.path);
 								send("Object \"" + p.name + "\" deleted.");
 								core.world.reload();
@@ -153,7 +164,7 @@ public class CommandHandler extends Handler implements MessageListener{
 									//String lines = "";
 									StringBuilder lines = new StringBuilder();
 									Stream<String> stream = Files.lines(p.path);
-									stream.forEach((String line)-> {
+									stream.forEach((String line) -> {
 										if(line.toLowerCase().startsWith(valuename)){
 											line = valuename + ": " + value;
 										}
@@ -162,13 +173,13 @@ public class CommandHandler extends Handler implements MessageListener{
 									stream.close();
 									Files.write(p.path, lines.toString().getBytes());
 								}else{
-									Files.write(p.path, ("\n"+valuename + ": " + value).getBytes(), StandardOpenOption.APPEND);
+									Files.write(p.path, ("\n" + valuename + ": " + value).getBytes(), StandardOpenOption.APPEND);
 								}
 								try{
 									core.world.createObject(c, p.path);
 									core.world.reload();
 									send("Value \"" + valuename + "\" set to " + value + ".");
-								}catch (Exception e){
+								}catch(Exception e){
 									send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
 									e.printStackTrace();
 								}
@@ -206,7 +217,7 @@ public class CommandHandler extends Handler implements MessageListener{
 						}
 
 						send("Moving to " + MiscUtils.capitalize(string) + ".");
-						player.location = (Location)loc;
+						player.location = (Location) loc;
 						return;
 					}
 				}else{
@@ -222,54 +233,44 @@ public class CommandHandler extends Handler implements MessageListener{
 			}
 		}else if(message.equals("equips") || message.equals("equipment")){
 			send("Equipment: ");
-			for(int i = 0; i < player.equips.length; i ++){
-				send(Player.equipnames[i] + ": " + (player.equips[i] == null ? "None" : player.equips[i].item.name()));
+			for(int i = 0; i < player.equips.length; i++){
+				send(EquipSlot.values()[i].name + ": " + (player.equips[i] == null ? "None" : player.equips[i].item.name()));
 			}
 		}else if(message.equals("equip")){
 			if(args.length == 1){
-				String name = args[0];
-				ItemStack found = null;
-				for(ItemStack stack : player.inventory){
-					if(stack.item.type.name().equals(name)){
-						found = stack;
-						break;
-					}
-				}
 				
-				if(found != null){
-					send(player.tryEquip(found));
-				}else{
+				player.useItem(args[0], (stack)->{
+					send(player.tryEquip(stack));
+				}, ()->{
 					send("You don't have that item in your inventory.");
-				}
+				});
+				
 			}else{
 				send("Usage: -equip <item name>");
 			}
 		}else if(message.equals("eat")){
 			if(args.length == 1){
 				String object = args[0];
-				ItemStack remove = null;
-				for(int i = 0; i < player.inventory.size(); i ++){
-					ItemStack stack = player.inventory.get(i);
-					if(stack.item.name.equals(object)){
-						if(stack.item.type != ItemType.consumable){
-							send("You cannot eat that item!");
-							return;
-						}
-						int energy = stack.item.getInt("energy");
-						int health = stack.item.getInt("health");
-						
-						send("You eat the " + stack.item.name() + ".");
-						if(energy != 0) send((energy > 0 ? "+" : "") + energy + " Energy.");
-						if(health != 0) send((health > 0 ? "+" : "") + health + " HP.");
-						player.energy = MiscUtils.clamp(player.energy + energy, 0, player.maxenergy);
-						player.health = MiscUtils.clamp(player.health + health, 0, player.maxhealth);
-						
-						remove = stack;
-						break;
+				ItemStack stack = player.findItem(object);
+
+				if(stack != null){
+					if(stack.item.type != ItemType.consumable){
+						send("You cannot eat that item!");
+						return;
 					}
-				}
-				if(remove != null){
-					player.inventory.remove(remove);
+					
+					int energy = stack.item.getInt("energy");
+					int health = stack.item.getInt("health");
+
+					send("You eat the " + stack.item.name() + ".");
+					if(energy != 0)
+						send((energy > 0 ? "+" : "") + energy + " Energy.");
+					if(health != 0)
+						send((health > 0 ? "+" : "") + health + " HP.");
+					player.energy = UCore.clamp(player.energy + energy, 0, player.maxenergy);
+					player.health = UCore.clamp(player.health + health, 0, player.maxhealth);
+
+					player.inventory.remove(stack);
 				}else{
 					send("No item with that name found.");
 				}
@@ -316,10 +317,15 @@ public class CommandHandler extends Handler implements MessageListener{
 				send("Usage: -evalues [entity type].");
 			}
 		}else if(message.equals("levels")){
-			for(int i = 1;i < 100;i += 5){
-				int xp = (int)(Math.pow(i, 1.5 + i * 0.005) * 100);
+			for(int i = 1; i < 100; i += 5){
+				int xp = (int) (Math.pow(i, 2) * 100);
 				send("Level " + i + ": " + xp + " XP");
 			}
+		}else if(message.equals("level")){
+			int lxp = player.levelToXP(player.level);
+			int tolevel = player.levelToXP(player.level + 1) - lxp;
+			send("Level: " + player.level);
+			send("XP: " + (player.xp - lxp) + "/" + tolevel);
 		}else if(message.equals("objects")){
 			for(HashMap<?, Parseable> map : core.world.objects.values())
 				for(Parseable p : map.values())
@@ -343,10 +349,39 @@ public class CommandHandler extends Handler implements MessageListener{
 				send("Usage: -attack [monster].");
 			}
 		}
+		
+		*/
+	}
+	
+	protected void command(String text, String params, Consumer<String[]> runner){
+		commands.add(new Command(text, params, runner));
+	}
+	
+	protected void adminCommand(String text, String params, Consumer<String[]> runner){
+		adminCommands.add(new Command(text, params, runner));
 	}
 
 	public void send(String message){
 		core.messages.send(message, lastid);
 	}
 
+	@Override
+	public void onFileRecieved(String userid, String chatid, String fileid){
+
+	}
+	
+	static class Command{
+		public final String text;
+		public final String params;
+		public final int paramLength;
+		public final Consumer<String[]> runner;
+		
+		public Command(String text, String params, Consumer<String[]> runner){
+			this.text = text;
+			this.params = params;
+			this.runner = runner;
+			
+			paramLength = params.length() == 0 ? 0 : (params.length() - params.replaceAll(" ", "").length() + 1);
+		}
+	}
 }

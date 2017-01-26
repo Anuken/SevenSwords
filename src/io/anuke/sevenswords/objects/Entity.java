@@ -2,7 +2,6 @@ package io.anuke.sevenswords.objects;
 
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.items.Drop;
-import io.anuke.utils.MiscUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,10 +16,6 @@ public class Entity extends Parseable{
 
 	public String toString(){
 		return String.format("EntityType: %s, drops: " + drops + ", maxhealth: %d, attack: %d, defence: %d, XP drop: %d", name, health, attack, defence, exp);
-	}
-
-	public String name(){
-		return MiscUtils.capitalize(name);
 	}
 
 	@Override

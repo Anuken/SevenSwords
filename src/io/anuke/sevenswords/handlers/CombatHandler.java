@@ -57,7 +57,7 @@ public class CombatHandler extends Handler{
 		player.addItems(drops);
 		
 		message.append("\n+" + player.battle.entity.type.exp + " EXP.");
-		player.xp += player.battle.entity.type.exp;
+		player.addXP(player.battle.entity.type.exp);
 	}
 
 	private void runDefeat(Player player, StringBuilder message){
