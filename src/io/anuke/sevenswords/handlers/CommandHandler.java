@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
+import io.anuke.sevenswords.objects.Player;
 import io.anuke.utils.bots.MessageHandler.MessageListener;
 
 public class CommandHandler extends Handler implements MessageListener{
@@ -17,6 +18,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y");
 	private List<Command> commands = new ArrayList<Command>();
 	private List<Command> adminCommands = new ArrayList<Command>();
+	private Player currentPlayer;
 
 	public CommandHandler(Core world) {
 		super(world);
@@ -46,7 +48,21 @@ public class CommandHandler extends Handler implements MessageListener{
 		message = args[0];
 		args = Arrays.copyOfRange(args, 1, args.length);
 		
+		currentPlayer = core.getPlayer(userid);
+		
 		handleCommand(chatid, username, message, args, userid);
+	}
+	
+	public Player getCurrentPlayer(){
+		return currentPlayer;
+	}
+	
+	public String getLastChat(){
+		return lastid;
+	}
+	
+	public List<Command> getCommandList(){
+		return commands;
 	}
 
 	private void fileRecieved(String string){
@@ -70,6 +86,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	}
 
 	private void handleCommand(String chatid, String username, String message, String[] args, String userid){
+		
 		for(Command command : commands){
 			if(command.text.equals(message)){
 				if(args.length == command.paramLength){
@@ -80,9 +97,21 @@ public class CommandHandler extends Handler implements MessageListener{
 				break;
 			}
 		}
+		if(admins.contains(username)){
+			for(Command command : adminCommands){
+				if(command.text.equals(message)){
+					if(args.length == command.paramLength){
+						command.runner.accept(args);
+					}else{
+						send("Usage: -"+ command.text +" "+command.params);
+					}
+					break;
+				}
+			}
+		}
+		
 		
 		/*
-
 		if(admins.contains(username)){
 			if(!waitingForFile && message.equals("sendobject")){
 				if(args.length == 1){
