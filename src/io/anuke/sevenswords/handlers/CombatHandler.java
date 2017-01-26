@@ -1,13 +1,13 @@
 package io.anuke.sevenswords.handlers;
 
+import java.util.ArrayList;
+
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Battle;
 import io.anuke.sevenswords.entities.EntityInstance;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Player;
-
-import java.util.ArrayList;
 
 public class CombatHandler extends Handler{
 	public final int roundtime = 7000;
@@ -70,9 +70,11 @@ public class CombatHandler extends Handler{
 		boolean finished = false;
 
 		EntityInstance entity = player.battle.entity;
+		
+		int playerDamage = player.getAttack();
 
 		int playerDamaged = entity.type.attack - player.getDefense();
-		int enemyDamaged = player.getAttack() - entity.type.defence;
+		int enemyDamaged = playerDamage- entity.type.defence;
 
 		playerDamaged = Math.max(playerDamaged, 0);
 		enemyDamaged = Math.max(enemyDamaged, 0);
@@ -87,8 +89,8 @@ public class CombatHandler extends Handler{
 			runVictory(player, message);
 			finished = true;
 		}else{
-			message.append("\nYou hit " + entity.type.name() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : " ( Blocked " + entity.type.defence + " damage.)"));
-			message.append("\n" + entity.type.name() + " hit you for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : " ( Blocked " + player.getDefense() + " damage.)"));
+			message.append("\nYou hit " + entity.type.name() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : " ( Blocked " + Math.min(entity.type.defence, playerDamage) + " damage.)"));
+			message.append("\n" + entity.type.name() + " hit you for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : " ( Blocked " + Math.min(player.getDefense(), entity.type.attack) + " damage.)"));
 			message.append("\n");
 			message.append("\nHealth: " + player.health);
 			message.append("\nEnemy Health: " + entity.health);

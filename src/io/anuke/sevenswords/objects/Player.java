@@ -14,7 +14,7 @@ import io.anuke.sevenswords.items.ItemType;
 
 public class Player{
 	public static ItemType[] equiptypes = {weapon, helm, armor, boots, amulet, offhand};
-	public static double exponent = 2, scale = 100;
+	public static double exponent = 3, scale = 100;
 	public Location location;
 	public int health = 100, energy = 100, maxhealth = 100, maxenergy = 100;
 	public int level = 0;
@@ -43,7 +43,7 @@ public class Player{
 	
 	public void useItem(String name, Consumer<ItemStack> found, Runnable notFound){
 		ItemStack item = findItem((stack)->{return stack.nameIs(name);});
-		if(item == null){
+		if(item != null){
 			found.accept(item);
 		}else{
 			notFound.run();

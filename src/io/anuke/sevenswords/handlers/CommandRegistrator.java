@@ -1,6 +1,8 @@
 package io.anuke.sevenswords.handlers;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import io.anuke.sevenswords.Core;
@@ -40,9 +42,10 @@ public class CommandRegistrator{
 		
 		cmd("stats", ()->{
 			send("Level " + player().level + ".");
-			send(player().xp + " XP.");
+			send(format().format(player().xp) + " XP.");
 			send("Health: " + player().health + "/" + player().maxhealth);
 			send("Energy: " + player().energy + "/" + player().maxenergy);
+			send("Defense: " + player().getDefense());
 		});
 		
 		cmd("inventory", ()->{
@@ -61,7 +64,7 @@ public class CommandRegistrator{
 			int lxp = player().levelToXP(player().level);
 			int tolevel = player().levelToXP(player().level + 1) - lxp;
 			send("Level: " + player().level);
-			send("XP: " + (player().xp - lxp) + "/" + tolevel);
+			send("XP: " + format().format((player().xp - lxp)) + "/" + format().format(tolevel));
 		});
 		
 		cmd("help", ()->{
@@ -174,6 +177,10 @@ public class CommandRegistrator{
 				for(Parseable p : map.values())
 					send("-" + p.name + " [" + p.getClass().getSimpleName() + "]");
 		});
+	}
+	
+	static NumberFormat format(){
+		return NumberFormat.getNumberInstance(Locale.US);
 	}
 	
 	static Core core(){
