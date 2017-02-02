@@ -48,7 +48,7 @@ public class CommandRegistrator{
 					}
 
 					send("- Now at *" + SevenUtils.capitalize(string) + "* -");
-					send("_There are_ `" + ((Location)loc).entities.length + "` _monsters here._");
+					send("_There are_ `" + ((Location)loc).entities.length + "` _enemies here._");
 					player().location = (Location) loc;
 					return;
 				}
@@ -58,7 +58,7 @@ public class CommandRegistrator{
 		});
 		
 		cmd("look", ()->{
-			send("| *"+player().location.name()+"*: Monsters |");
+			send("| *"+player().location.name()+"*: enemies |");
 			for(Entity type : player().location.entities){
 				send("- `" + type.name() + "`");
 			}
@@ -67,7 +67,7 @@ public class CommandRegistrator{
 		cmd("equips", ()->{
 			send("--*Equipment* _["+player().name()+"]_--");
 			for(int i = 0; i < player().equips.length; i++){
-				send(EquipSlot.values()[i].name + ": " + (player().equips[i] == null ? "`None`" : player().equips[i].item.name()));
+				send(EquipSlot.values()[i].name + ": " + (player().equips[i] == null ? "`None`" : "*" + player().equips[i].item.name() + "*"));
 			}
 		});
 		
@@ -111,7 +111,7 @@ public class CommandRegistrator{
 		cmd("help", ()->{
 			send("| *Commands* |");
 			for(Command command : handler.getCommandList()){
-				send("-`" + command.text + "` _" + command.params + "_");
+				send("-`" + command.text + "`_ " + command.params + "_");
 			}
 		});
 		
@@ -133,11 +133,11 @@ public class CommandRegistrator{
 				int energy = stack.item.getInt("energy");
 				int health = stack.item.getInt("health");
 
-				send("You eat the " + stack.item.name() + ".");
+				send("_You eat the " + stack.item.name() + "_.");
 				if(energy != 0)
-					send((energy > 0 ? "+" : "") + energy + " Energy.");
+					send("`" + (energy > 0 ? "+" : "") + energy + "` *Energy*");
 				if(health != 0)
-					send((health > 0 ? "+" : "") + health + " HP.");
+					send("`" + (health > 0 ? "+" : "") + health + "` *HP*");
 				player().energy = UCore.clamp(player().energy + energy, 0, player().maxenergy);
 				player().health = UCore.clamp(player().health + health, 0, player().maxhealth);
 
@@ -147,7 +147,7 @@ public class CommandRegistrator{
 			});
 		});
 		
-		cmd("attack", "<monster>", (args)->{
+		cmd("attack", "<enemy>", (args)->{
 			if(player().attacking()){
 				send("You are already in battle! Use -leave to stop the fight.");
 				return;
@@ -162,7 +162,7 @@ public class CommandRegistrator{
 				}
 			}
 			
-			send("You can't see a monster like that anywhere. You could -look to see the types of monsters here.");
+			send("You can't see an enemy like that anywhere. You could -look to see the types of enemies here.");
 		});
 		
 		
@@ -176,9 +176,9 @@ public class CommandRegistrator{
 		
 		
 		admincmd("adminhelp", "", (args)->{
-			send("Admin Commands:");
+			send("| *Admin Commands* |");
 			for(Command command : handler.getAdminCommandList()){
-				send("-" + command.text + " " + command.params);
+				send("-`" + command.text + "`_ " + command.params + "_");
 			}
 		});
 		
@@ -187,7 +187,7 @@ public class CommandRegistrator{
 			Item item = core().world.getItem(args[0]);
 			if(item != null){
 				player().addItem(new ItemStack(item));
-				send("Spawning in 1x " + item.uncappedName() + ".");
+				send("Spawning in `1x " + item.uncappedName() + "`.");
 			}else{
 				send("Item type not found.");
 			}
@@ -312,6 +312,46 @@ public class CommandRegistrator{
 							core().world.createObject(c, p.path);
 							core().world.reload();
 							send("Value \"`" + valuename + "`\" set to `" + value + "`.");
+						}catch(Exception e){
+							send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+							e.printStackTrace();
+						}
+					}catch(IOException e){
+						e.printStackTrace();
+						send("Error writing to file.");
+					}
+				}
+			}else{
+				send("Invalid object type.");
+			}
+		});
+		
+		admincmd("unset", "<type> <name> <value-name>", (args)->{
+			String type = args[0];
+			Class<Parseable> c = core().world.getClass(type, args[1]);
+			if(c != null){
+				Parseable p = core().world.get(args[1], c.asSubclass(Parseable.class));
+				if(p == null){
+					send("No object with that name found.");
+				}else{
+					String valuename = args[2];
+					try{
+						if(p.values.containsKey(valuename)){
+							StringBuilder lines = new StringBuilder();
+							Stream<String> stream = Files.lines(p.path);
+							stream.forEach((String line) -> {
+								if(!line.toLowerCase().startsWith(valuename)){
+									lines.append(line + "\n");
+								}
+							});
+							stream.close();
+							Files.write(p.path, lines.toString().getBytes());
+						}
+						
+						try{
+							core().world.createObject(c, p.path);
+							core().world.reload();
+							send("Value \"`" + valuename + "`\" removed.");
 						}catch(Exception e){
 							send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
 							e.printStackTrace();

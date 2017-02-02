@@ -15,7 +15,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;
 	protected boolean waitingForFile;
 	protected Class<?> filetype;
-	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y");
+	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y", "Anuke");
 	private List<Command> commands = new ArrayList<Command>();
 	private List<Command> adminCommands = new ArrayList<Command>();
 	private Player currentPlayer;
@@ -70,7 +70,7 @@ public class CommandHandler extends Handler implements MessageListener{
 	}
 
 	private void fileRecieved(String string){
-		send("Recieved object, parsing...");
+		send("_Recieved object, parsing..._");
 		Path path = Paths.get("downloads", "temp");
 		try{
 			Files.write(path, string.getBytes());
@@ -81,7 +81,7 @@ public class CommandHandler extends Handler implements MessageListener{
 			Files.copy(path, core.world.getPath(filetype).resolve(p.name), StandardCopyOption.REPLACE_EXISTING);
 			core.world.objects.clear();
 			core.world.load();
-			send("Object \"" + p.name + "\" parsed successfully.");
+			send("_Object \"_`" + p.name + "`\"_ parsed successfully._");
 		}catch(Exception e){
 			send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
 			System.out.println("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());

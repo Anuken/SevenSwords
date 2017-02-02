@@ -69,7 +69,7 @@ public class CombatHandler extends Handler{
 		
 		player.addItems(drops);
 		
-		message.append("```+`" + player.battle.entity.type.exp + "` XP");
+		message.append("```\n+`" + player.battle.entity.type.exp + "` XP");
 		player.addXP(player.battle.entity.type.exp);
 	}
 

@@ -2,4 +2,5 @@ name: frog
 attack: 50
 health: 100
 drops: bleach-1/1
-xp: 333
+
+exp: 3000

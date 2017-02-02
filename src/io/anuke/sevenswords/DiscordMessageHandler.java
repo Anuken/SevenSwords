@@ -18,38 +18,36 @@ import sx.blah.discord.handle.obj.IUser;
 public class DiscordMessageHandler extends TimedMessageHandler{
 	String token;
 	IDiscordClient client;
-	HashMap<String,IUser> users = new HashMap<String, IUser>();
+	HashMap<String, IUser> users = new HashMap<String, IUser>();
 	MessageListener listener;
 	String lastchannel;
 
-	public static void main(String[] args){
-		try{
-			new Core(new DiscordMessageHandler());
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+	public static void main(String[] args) throws Exception{
+		new Core(new DiscordMessageHandler());
 	}
-	
-	public DiscordMessageHandler() throws Exception{
+
+	public DiscordMessageHandler() throws Exception {
 		List<String> list = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Documents/eclipse").resolve("token-discord.dat"));
 		token = list.get(0);
 
 		ClientBuilder clientBuilder = new ClientBuilder();
 		clientBuilder.withToken(token);
 
-		client = clientBuilder.build();
+		client = clientBuilder.login();
 
 		EventDispatcher event = client.getDispatcher();
 		event.registerListener(this);
 
 		System.out.println("Discord bot up.");
 	}
-	
+
 	@EventSubscriber
 	public void onMessageReceivedEvent(MessageReceivedEvent event){
 		IMessage m = event.getMessage();
 		users.put(m.getAuthor().getID(), m.getAuthor());
 		lastchannel = event.getMessage().getChannel().getID();
+		
+		listener.onMessageRecieved(m.getContent(), m.getAuthor().getName(), m.getChannel().getID(), m.getAuthor().getID(), m.getID());
 	}
 
 	@Override
@@ -60,8 +58,8 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	@Override
 	public void edit(String message, String chatid, String messageid){
 		try{
-			client.getChannelByID(chatid).getMessageByID(message).edit(message);
-		}catch (Exception e){
+			client.getChannelByID(chatid).getMessageByID(messageid).edit(message);
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
@@ -77,10 +75,25 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	}
 
 	@Override
+	public void send(String message, final String id){
+		String out = "";
+		for(char c : message.toCharArray()){
+			if(c == '*'){
+				out += "**";
+			}else{
+				out += c;
+			}
+		}
+		
+		super.send(out, id);
+	}
+
+	@Override
 	public String sendRaw(String message, String chatid){
+		
 		try{
 			return client.getChannelByID(chatid).sendMessage(message).getID();
-		}catch (Exception e){
+		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
