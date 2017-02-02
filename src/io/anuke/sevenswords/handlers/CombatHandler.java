@@ -39,7 +39,7 @@ public class CombatHandler extends Handler{
 		public void run(){
 			while(true){
 				if(player.battle.stopFlag){
-					Core.core.messages.edit("Battle ended prematurely - you have left the fight.", player.battle.chatid, player.battle.messageid);
+					Core.core.messages.edit("Battle ended prematurely - "+player.name()+" has left the fight.", player.battle.chatid, player.battle.messageid);
 					player.battle = null;
 					break;
 				}
@@ -59,28 +59,36 @@ public class CombatHandler extends Handler{
 
 	private void runVictory(Player player, StringBuilder message){
 		ArrayList<ItemStack> drops = player.battle.entity.generateDrops();
-		message.append("\nYou have killed the " + player.battle.entity.type.uncappedName() + (drops.size() == 0 ? "." : ".\nLoot:"));
-
+		message.append("\n_" + player.name() + " is victorious!_" + (drops.size() == 0 ? "" : "\n\nDrops: ``` "));
+		
+		int i = 0;
 		for(ItemStack stack : drops){
-			message.append("\n- " + stack);
+			if(i++ != 0) message.append("\n ");
+			message.append("- " + stack);
 		}
-
+		
 		player.addItems(drops);
 		
-		message.append("\n+" + player.battle.entity.type.exp + " EXP.");
+		message.append("```+`" + player.battle.entity.type.exp + "` XP");
 		player.addXP(player.battle.entity.type.exp);
 	}
 
 	private void runDefeat(Player player, StringBuilder message){
-		message.append("\nYou have died.");
-
+		message.append("\n`"+player.name()+" has died.`");
+		message.append("\nEnergy depleted.");
+		
+		player.energy = 5;
+		player.health = 5;
 	}
 
 	private boolean runRound(Player player){
-		StringBuilder message = new StringBuilder("Round " + ++player.battle.round + ".");
+		StringBuilder message = new StringBuilder("``` [Round " + ++player.battle.round + "] ```");
+		
 		boolean finished = false;
 
 		EntityInstance entity = player.battle.entity;
+		
+		message.append("--*"+player.name() + "*  |  *" + entity.type.name() + "*--\n");
 		
 		int playerDamage = player.getAttack();
 
@@ -100,11 +108,11 @@ public class CombatHandler extends Handler{
 			runVictory(player, message);
 			finished = true;
 		}else{
-			message.append("\nYou hit " + entity.type.name() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : " ( Blocked " + Math.min(entity.type.defence, playerDamage) + " damage.)"));
-			message.append("\n" + entity.type.name() + " hit you for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : " ( Blocked " + Math.min(player.getDefense(), entity.type.attack) + " damage.)"));
+			message.append("\n_You hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
+			message.append("\n" + entity.type.name() + " hit you for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack)+")* "));
 			message.append("\n");
-			message.append("\nHealth: " + player.health);
-			message.append("\nEnemy Health: " + entity.health);
+			message.append("\nHealth: `" + player.health + "`");
+			message.append("\nEnemy Health: `" + entity.health + "`");
 		}
 
 		String string = message.toString();

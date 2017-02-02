@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import io.anuke.sevenswords.Core;
+import io.anuke.sevenswords.SevenUtils;
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.handlers.CommandHandler.Command;
 import io.anuke.sevenswords.items.ItemStack;
@@ -18,7 +19,6 @@ import io.anuke.sevenswords.items.ItemType;
 import io.anuke.sevenswords.objects.*;
 import io.anuke.sevenswords.objects.Player.EquipSlot;
 import io.anuke.ucore.UCore;
-import io.anuke.utils.MiscUtils;
 
 public class CommandRegistrator{
 	public static CommandHandler handler;
@@ -29,58 +29,10 @@ public class CommandRegistrator{
 			send("Location: " + player().location.name());
 		});
 		
-		cmd("look", ()->{
-			send("Monsters: ");
-			for(Entity type : player().location.entities){
-				send("- " + type.name());
-			}
-		});
-		
-		cmd("equips", ()->{
-			send("Equipment: ");
-			for(int i = 0; i < player().equips.length; i++){
-				send(EquipSlot.values()[i].name + ": " + (player().equips[i] == null ? "None" : player().equips[i].item.name()));
-			}
-		});
-		
-		cmd("stats", ()->{
-			send("Level " + player().level + ".");
-			send(format().format(player().xp) + " XP.");
-			send("Health: " + player().health + "/" + player().maxhealth);
-			send("Energy: " + player().energy + "/" + player().maxenergy);
-			send("Defense: " + player().getDefense());
-		});
-		
-		cmd("inventory", ()->{
-			if(player().inventory.size() == 0){
-				send("Your inventory is empty.");
-			}else{
-				send("Inventory: ");
-				int i = 0;
-				for(ItemStack item : player().inventory){
-					send("- " + item.toString() + " [" + i++ + "]");
-				}
-			}
-		});
-		
-		cmd("level", ()->{
-			int lxp = player().levelToXP(player().level);
-			int tolevel = player().levelToXP(player().level + 1) - lxp;
-			send("Level: " + player().level);
-			send("XP: " + format().format((player().xp - lxp)) + "/" + format().format(tolevel));
-		});
-		
-		cmd("help", ()->{
-			send("Commands:");
-			for(Command command : handler.getCommandList()){
-				send("-" + command.text + " " + command.params);
-			}
-		});
-		
 		cmd("locations", ()->{
-			send("Locations: ");
+			send("| *Locations* |");
 			for(Parseable loc : core().world.objects.get(Location.class).values()){
-				send("- " + loc.name());
+				send("- `" + loc.name() + "`");
 			}
 		});
 		
@@ -95,12 +47,71 @@ public class CommandRegistrator{
 						return;
 					}
 
-					send("Moving to " + MiscUtils.capitalize(string) + ".");
+					send("- Now at *" + SevenUtils.capitalize(string) + "* -");
+					send("_There are_ `" + ((Location)loc).entities.length + "` _monsters here._");
 					player().location = (Location) loc;
 					return;
 				}
 			}else{
 				send("Location not found. Type -locations for a list of locations.");
+			}
+		});
+		
+		cmd("look", ()->{
+			send("| *"+player().location.name()+"*: Monsters |");
+			for(Entity type : player().location.entities){
+				send("- `" + type.name() + "`");
+			}
+		});
+		
+		cmd("equips", ()->{
+			send("--*Equipment* _["+player().name()+"]_--");
+			for(int i = 0; i < player().equips.length; i++){
+				send(EquipSlot.values()[i].name + ": " + (player().equips[i] == null ? "`None`" : player().equips[i].item.name()));
+			}
+		});
+		
+		cmd("stats", ()->{
+			send("Level: `" + player().level + "`");
+			send("Experience: `" + format().format(player().xp) + "`");
+			send("Health: `" + player().health + "`/`" + player().maxhealth+"`");
+			send("Energy: `" + player().energy + "`/`" + player().maxenergy+"`");
+			send("Defense: `" + player().getDefense()+"`");
+		});
+		
+		cmd("inventory", ()->{
+			if(player().inventory.size() == 0){
+				send("Your inventory is empty.");
+			}else{
+				send("Inventory _[" + player().name() + "]_:");
+				int i = 0;
+				for(ItemStack item : player().inventory){
+					send((i == 0 ? "``` " : " ") + "- " + item.toString() + " [" + i++ + "]");
+				}
+				send("```");
+			}
+		});
+		
+		cmd("level", ()->{
+			int lxp = player().levelToXP(player().level);
+			int tolevel = player().levelToXP(player().level + 1) - lxp;
+			long from = (player().xp - lxp);
+			
+			String string = "";
+			int len = 15;
+			for(int i = 0; i < len; i ++)
+				string += ((float)from/tolevel*len) > i ? '█' : '░';
+			
+			send("```{|" + string+ "|}```");
+			
+			send("Level: `" + player().level + "`");
+			send("XP: `" + format().format((player().xp - lxp)) + "`/`" + format().format(tolevel) + "`");
+		});
+		
+		cmd("help", ()->{
+			send("| *Commands* |");
+			for(Command command : handler.getCommandList()){
+				send("-`" + command.text + "` _" + command.params + "_");
 			}
 		});
 		
@@ -206,7 +217,7 @@ public class CommandRegistrator{
 		admincmd("objects", "", (args)->{
 			for(HashMap<?, Parseable> map : core().world.objects.values())
 				for(Parseable p : map.values())
-					send("-" + p.name + " [" + p.getClass().getSimpleName() + "]");
+					send("-" + p.name + " [`" + p.getClass().getSimpleName() + "`]");
 		});
 		
 		admincmd("reload", "", (args)->{
@@ -300,7 +311,7 @@ public class CommandRegistrator{
 						try{
 							core().world.createObject(c, p.path);
 							core().world.reload();
-							send("Value \"" + valuename + "\" set to " + value + ".");
+							send("Value \"`" + valuename + "`\" set to `" + value + "`.");
 						}catch(Exception e){
 							send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
 							e.printStackTrace();

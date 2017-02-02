@@ -13,7 +13,7 @@ public class Drop{
 		this.quantity = quantity;
 		this.item = Core.core.world.getItem(item);
 		if(this.item == null){
-			throw new RuntimeException("Failure loading drop: item \"" + item + "\" not defined.");
+			throw new RuntimeException("Failure loading drops: item \"" + item + "\" not defined.");
 		}
 	}
 	

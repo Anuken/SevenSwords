@@ -15,6 +15,7 @@ import io.anuke.sevenswords.items.ItemType;
 public class Player{
 	public static ItemType[] equiptypes = {weapon, helm, armor, boots, amulet, offhand};
 	public static double exponent = 3, scale = 100;
+	public final String id;
 	public Location location;
 	public int health = 100, energy = 100, maxhealth = 100, maxenergy = 100;
 	public int level = 0;
@@ -23,8 +24,13 @@ public class Player{
 	public Battle battle;
 	public ItemStack[] equips = new ItemStack[6];
 	
-	public Player(Location location){
+	public Player(String id, Location location){
 		this.location = location;
+		this.id = id;
+	}
+	
+	public String name(){
+		return Core.core.messages.getUser(id).getFirstName();
 	}
 	
 	public ItemStack findItem(Predicate<ItemStack> pred){

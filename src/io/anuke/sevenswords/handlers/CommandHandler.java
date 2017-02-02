@@ -84,6 +84,7 @@ public class CommandHandler extends Handler implements MessageListener{
 			send("Object \"" + p.name + "\" parsed successfully.");
 		}catch(Exception e){
 			send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+			System.out.println("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
 			e.printStackTrace();
 		}
 		waitingForFile = false;
@@ -129,7 +130,7 @@ public class CommandHandler extends Handler implements MessageListener{
 
 	@Override
 	public void onFileRecieved(String userid, String chatid, String fileid){
-
+		//haha
 	}
 	
 	static class Command{

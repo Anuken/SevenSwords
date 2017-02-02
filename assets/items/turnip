@@ -1,2 +1,4 @@
 name: Turnip
+type: consumable
 energy: +10
+health: +100
