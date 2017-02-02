@@ -21,7 +21,7 @@ import org.telegram.telegrambots.updateshandlers.SentCallback;
 
 import io.anuke.utils.bots.TimedMessageHandler;
 
-public class TelegramMessageSender extends TimedMessageHandler{
+public class TelegramMessageHandler extends TimedMessageHandler{
 	Bot bot;
 	MessageListener listener;
 	String token;
@@ -29,7 +29,7 @@ public class TelegramMessageSender extends TimedMessageHandler{
 
 	public static void main(String[] args){
 		ApiContextInitializer.init();
-		new Core(new TelegramMessageSender());
+		new Core(new TelegramMessageHandler());
 	}
 
 	{
@@ -49,6 +49,10 @@ public class TelegramMessageSender extends TimedMessageHandler{
 			e.printStackTrace();
 			System.exit( -1);
 		}
+	}
+	
+	public String getUserName(String id){
+		return users.get(id).getFirstName();
 	}
 	
 	public User getUser(String id){

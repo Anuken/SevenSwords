@@ -30,7 +30,7 @@ public class Player{
 	}
 	
 	public String name(){
-		return Core.core.messages.getUser(id).getFirstName();
+		return Core.core.messages.getUserName(id);
 	}
 	
 	public ItemStack findItem(Predicate<ItemStack> pred){

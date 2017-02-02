@@ -6,16 +6,17 @@ import io.anuke.sevenswords.handlers.CombatHandler;
 import io.anuke.sevenswords.handlers.CommandHandler;
 import io.anuke.sevenswords.handlers.ObjectHandler;
 import io.anuke.sevenswords.objects.Player;
+import io.anuke.utils.bots.TimedMessageHandler;
 
 public class Core{
 	public static Core core;
-	public TelegramMessageSender messages;
+	public TimedMessageHandler messages;
 	public CommandHandler commands;
 	public ObjectHandler world;
 	public CombatHandler combat;
 	public HashMap<String, Player> players = new HashMap<String, Player>();
 	
-	public Core(TelegramMessageSender handler){
+	public Core(TimedMessageHandler handler){
 		core = this;
 		this.messages = handler;
 		
