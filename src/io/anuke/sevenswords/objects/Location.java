@@ -1,13 +1,15 @@
 package io.anuke.sevenswords.objects;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
-
-import java.util.HashMap;
 
 
 public class Location extends Parseable{
 	public Entity[] entities;
+	public HashSet<Player> players = new HashSet<Player>();
 
 	@Override
 	public void parse(HashMap<String, String> values){

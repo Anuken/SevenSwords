@@ -23,6 +23,13 @@ public class CombatHandler extends Handler{
 		thread.start();
 	}
 	
+	public void join(String chatid, Player player, Player other){
+		Thread thread = new Thread(new AttackTask(player));
+		player.battle = other.battle;
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
 	public void stopBattle(Player player){
 		player.battle.stopFlag = true;
 		player.battle.thread.interrupt();

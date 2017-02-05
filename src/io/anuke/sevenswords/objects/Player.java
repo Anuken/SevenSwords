@@ -27,6 +27,7 @@ public class Player{
 	public Player(String id, Location location){
 		this.location = location;
 		this.id = id;
+		location.players.add(this);
 	}
 	
 	public String name(){
@@ -74,6 +75,7 @@ public class Player{
 		}
 		if(slot == -1) return "You cannot equip that item.";
 		
+		if(equips[slot] == stack) return "That item is already equipped.";
 		if(equips[slot] != null) inventory.add(equips[slot]);
 		equips[slot] = stack;
 		return "Item equipped.";
