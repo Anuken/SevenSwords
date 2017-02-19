@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import io.anuke.sevenswords.Core;
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.objects.Player;
-import io.anuke.utils.bots.MessageHandler.MessageListener;
+import io.anuke.ucore.bots.MessageHandler.MessageListener;
 
 public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;

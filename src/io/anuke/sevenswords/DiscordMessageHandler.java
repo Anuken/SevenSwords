@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import io.anuke.utils.bots.TimedMessageHandler;
+import io.anuke.ucore.bots.MessageHandler.TimedMessageHandler;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;

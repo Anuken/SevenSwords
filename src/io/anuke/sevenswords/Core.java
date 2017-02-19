@@ -6,7 +6,7 @@ import io.anuke.sevenswords.handlers.CombatHandler;
 import io.anuke.sevenswords.handlers.CommandHandler;
 import io.anuke.sevenswords.handlers.ObjectHandler;
 import io.anuke.sevenswords.objects.Player;
-import io.anuke.utils.bots.TimedMessageHandler;
+import io.anuke.ucore.bots.MessageHandler.TimedMessageHandler;
 
 public class Core{
 	public static Core core;
