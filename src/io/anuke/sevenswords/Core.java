@@ -32,7 +32,7 @@ public class Core{
 	public Player getPlayer(String id){
 		Player player = players.get(id);
 		if(player == null){
-			player = new Player(id, world.getLocation("default"));
+			player = new Player(id, world.getLocation(ObjectHandler.DEFAULT_LOCATION));
 			players.put(id, player);
 		}
 		return player;

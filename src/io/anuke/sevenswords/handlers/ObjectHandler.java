@@ -12,6 +12,8 @@ import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.*;
 
 public class ObjectHandler extends Handler{
+	public static final String DEFAULT_LOCATION = "the_void";
+	
 	public final Path basePath = Paths.get(System.getProperty("user.home"), "/Projects/SevenSwords/assets");
 	public HashMap<Class<? extends Parseable>, HashMap<String, Parseable>> objects = new HashMap<Class<? extends Parseable>, HashMap<String, Parseable>>();
 	

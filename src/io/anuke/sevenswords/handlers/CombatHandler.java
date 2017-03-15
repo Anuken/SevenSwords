@@ -11,7 +11,7 @@ import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Player;
 
 public class CombatHandler extends Handler{
-	public final int roundtime = 10000;
+	public static final int roundtime = 10000;
 
 	public CombatHandler(Core world) {
 		super(world);

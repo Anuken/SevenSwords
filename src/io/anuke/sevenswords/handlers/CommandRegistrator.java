@@ -26,7 +26,7 @@ public class CommandRegistrator{
 	public static void register(){
 
 		cmd("location", () -> {
-			send("Location: " + player().location.name());
+			send("*Location:* _" + player().location.name() + "_");
 		});
 
 		cmd("locations", () -> {
