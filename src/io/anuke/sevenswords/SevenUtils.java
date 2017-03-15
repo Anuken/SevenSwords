@@ -18,4 +18,19 @@ public class SevenUtils{
 		return new String(chars);
 	}
 	
+	
+	public static String merge(Iterable<? extends Object> objects, String seperator){
+		String out = "";
+		
+		int i = 0;
+		
+		for(Object o : objects){
+			if(i ++ != 0){
+				out += seperator;
+			}
+			out += o.toString();
+		}
+		
+		return out;
+	}
 }

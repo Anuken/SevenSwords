@@ -141,6 +141,17 @@ public class CommandRegistrator{
 				send("You don't have that item in your inventory.");
 			});
 		});
+		
+		cmd("examine", "<item-name>", (args) -> {
+			player().useItem(args[0], (stack) -> {
+				send("Item: *"+stack.item.name()+"*");
+				if(stack.item.has("description"))
+					send("_\"" + stack.item.get("description") + "\"_");
+				send("+`" + stack.item.getInt("defense") + "` Defense");
+			}, () -> {
+				send("You don't have that item in your inventory.");
+			});
+		});
 
 		cmd("eat", "<item-name>", (args) -> {
 			player().useItem(args[0], (stack) -> {
@@ -176,7 +187,7 @@ public class CommandRegistrator{
 
 			for(Entity type : player().location.entities){
 				if(type.name.equalsIgnoreCase(string)){
-					core().combat.attack(handler.getLastChat(), player(), type);
+					core().combat.beginBattle(handler.getLastChat(), player(), type);
 					return;
 				}
 			}
@@ -194,7 +205,12 @@ public class CommandRegistrator{
 
 			for(Player player : player().location.players){
 				if(player.name().equalsIgnoreCase(string)){
-					core().combat.join(handler.getLastChat(), player(), player);
+					if(player.attacking()){
+						send("Joining fight with _" + player.name() + "_...");
+						core().combat.joinBattle(handler.getLastChat(), player(), player);
+					}else{
+						send("That player is not in battle!");
+					}
 					return;
 				}
 			}
@@ -206,7 +222,7 @@ public class CommandRegistrator{
 			if(!player().attacking()){
 				send("You are not in battle!");
 			}else{
-				core().combat.stopBattle(player());
+				core().combat.leaveBattle(player());
 			}
 		});
 
@@ -215,6 +231,10 @@ public class CommandRegistrator{
 			for(Command command : handler.getAdminCommandList()){
 				send("-`" + command.text + "`_ " + command.params + "_");
 			}
+		});
+		
+		admincmd("restart", "", (args) -> {
+			send("*This command is disabled.*");
 		});
 
 		admincmd("spawn", "<item-type>", (args) -> {

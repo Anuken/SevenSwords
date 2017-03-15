@@ -145,6 +145,10 @@ public class Player{
 		return (int)Math.pow(xp/scale, 1f/exponent);
 	}
 	
+	public String toString(){
+		return name();
+	}
+	
 	static public enum EquipSlot{
 		weapon("Weapon"), offhand("Off-Hand"), helm("Helm"), armor("Armor"), boots("Boots"), amulet("Amulet");
 		

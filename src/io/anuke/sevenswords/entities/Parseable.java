@@ -20,6 +20,10 @@ public abstract class Parseable{
 		return name.replace("_", " ");
 	}
 	
+	public String get(String name){
+		return values.get(name);
+	}
+	
 	public int getInt(String name){
 		if(!values.containsKey(name)) return 0;
 		return Integer.parseInt(values.get(name));

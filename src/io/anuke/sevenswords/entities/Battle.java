@@ -1,5 +1,7 @@
 package io.anuke.sevenswords.entities;
 
+import java.util.ArrayList;
+
 import io.anuke.sevenswords.objects.Player;
 
 public class Battle{
@@ -9,10 +11,11 @@ public class Battle{
 	public int round;
 	public Thread thread;
 	public boolean stopFlag;
+	public ArrayList<Player> players = new ArrayList<Player>();
 	
-	public Battle(String chatid, Player player, Thread thread, EntityInstance entity){
+	public Battle(String chatid, Player player, EntityInstance entity){
 		this.chatid = chatid;
 		this.entity = entity;
-		this.thread = thread;
+		players.add(player);
 	}
 }
