@@ -58,7 +58,7 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	@Override
 	public void edit(String message, String chatid, String messageid){
 		try{
-			client.getChannelByID(chatid).getMessageByID(messageid).edit(message);
+			client.getChannelByID(chatid).getMessageByID(messageid).edit(process(message));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -73,9 +73,8 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	public String getUserName(String id){
 		return users.get(id).getName();
 	}
-
-	@Override
-	public void send(String message, final String id){
+	
+	String process(String message){
 		String out = "";
 		for(char c : message.toCharArray()){
 			if(c == '*'){
@@ -85,6 +84,13 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 			}
 		}
 		
+		return out;
+	}
+
+	@Override
+	public void send(String message, final String id){
+		String out = process(message);
+		
 		super.send(out, id);
 	}
 
@@ -92,6 +98,7 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	public String sendRaw(String message, String chatid){
 		
 		try{
+			if(message.contains("*") && !message.contains("**")) message = process(message);
 			return client.getChannelByID(chatid).sendMessage(message).getID();
 		}catch(Exception e){
 			e.printStackTrace();

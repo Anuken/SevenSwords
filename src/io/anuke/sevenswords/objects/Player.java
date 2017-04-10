@@ -114,7 +114,7 @@ public class Player{
 	}
 	
 	public int getAttack(){
-		return 10 + (int)(Math.random()*10);
+		return 10 + (int)(Math.random()*10) + (equips[EquipSlot.weapon.ordinal()] != null ? equips[EquipSlot.weapon.ordinal()].item.getInt("attack") : 0);
 	}
 	
 	public int getDefense(){

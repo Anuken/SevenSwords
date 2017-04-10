@@ -35,6 +35,12 @@ public class CommandHandler extends Handler implements MessageListener{
 			if(message != null)
 				fileRecieved(message);
 		}
+		
+		if(message.equals("/start")){
+			lastid = chatid;
+			send("Type `-help` for the list of commands.");
+			return;
+		}
 
 		if(message == null || (!message.startsWith("-")))
 			return;

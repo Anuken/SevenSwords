@@ -66,7 +66,7 @@ public class TelegramMessageHandler extends TimedMessageHandler{
 			Message sent = bot.sendMessage(new SendMessage().setChatId(chatid).setText(message).enableMarkdown(true));
 			return sent.getMessageId() + "";
 		}catch(Exception e){
-			if(e.toString().contains("Can't parse message text")){
+			if(e.toString().contains("can't parse message text")){
 				System.out.println("Bad markdown request. Retrying...");
 				
 				try{
@@ -122,8 +122,8 @@ public class TelegramMessageHandler extends TimedMessageHandler{
 		@Override
 		public void onUpdateReceived(Update update){
 			if(listener != null){
-				listener.onMessageRecieved(update.getMessage().getText(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId() + "", update.getMessage().getFrom().getId() + "", update.getMessage().getMessageId() + "");
 				users.put(update.getMessage().getFrom().getId() + "", update.getMessage().getFrom());
+				listener.onMessageRecieved(update.getMessage().getText(), update.getMessage().getFrom().getUserName(), update.getMessage().getChatId() + "", update.getMessage().getFrom().getId() + "", update.getMessage().getMessageId() + "");
 			}
 		}
 

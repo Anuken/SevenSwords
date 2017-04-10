@@ -80,8 +80,14 @@ public class CombatHandler extends Handler{
 	}
 
 	private void runVictory(Battle battle, StringBuilder message){
+		
+		int s = 0;
 		for(Player player : battle.players){
-			ArrayList<ItemStack> drops = player.battle.entity.generateDrops();
+			if(s ++ != 0){
+				message.append("\n\n*|========================|*\n");
+			}
+			
+			ArrayList<ItemStack> drops = battle.entity.generateDrops();
 			message.append("\n_" + player.name() + " is victorious!_" + (drops.size() == 0 ? "" : "\n\nDrops: ``` "));
 
 			int i = 0;
@@ -93,7 +99,7 @@ public class CombatHandler extends Handler{
 
 			player.addItems(drops);
 
-			message.append("```\n+`" + player.battle.entity.type.exp + "` XP");
+			message.append((drops.size() != 0 ? "```" : "" )+ "\n+`" + player.battle.entity.type.exp + "` XP");
 			player.addXP(player.battle.entity.type.exp);
 
 			player.energy -= 5;
@@ -107,8 +113,8 @@ public class CombatHandler extends Handler{
 
 		player.energy = 5;
 		player.health = 50;
-		player.battle = null;
 		player.battle.players.remove(player);
+		player.battle = null;
 	}
 
 	private boolean runRound(Battle battle){
@@ -149,11 +155,11 @@ public class CombatHandler extends Handler{
 				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
 				message.append("\n" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
 				message.append("\n");
-				message.append("\nHealth: `" + player.health + "`");
+				message.append("\nHealth ("+player.name()+"): `" + player.health + "`");
 				finished = false;
 				
 				if(i == battle.players.size())
-					message.append("\nEnemy Health: `" + entity.health + "`");
+					message.append("\n\n*|========================|*\n\nEnemy Health: `" + entity.health + "`");
 			}
 			
 			

@@ -1,6 +1,6 @@
 name: frog
-attack: 12
+attack: 15
 health: 100
-drops: bleach-1/1
+drops: frogfrog-1/1
 
 exp: 3000

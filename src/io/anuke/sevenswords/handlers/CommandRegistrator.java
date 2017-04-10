@@ -268,7 +268,7 @@ public class CommandRegistrator{
 		admincmd("objects", "", (args) -> {
 			for(HashMap<?, Parseable> map : core().world.objects.values())
 				for(Parseable p : map.values())
-					send("-" + p.name + " [`" + p.getClass().getSimpleName() + "`]");
+					send("-" + p.name.replace("_", " ") + " (`" + p.getClass().getSimpleName() + "`)");
 		});
 
 		admincmd("reload", "", (args) -> {

@@ -1,6 +1,6 @@
 package io.anuke.sevenswords.entities;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.anuke.sevenswords.objects.Player;
 
@@ -11,7 +11,7 @@ public class Battle{
 	public int round;
 	public Thread thread;
 	public boolean stopFlag;
-	public ArrayList<Player> players = new ArrayList<Player>();
+	public CopyOnWriteArrayList<Player> players = new CopyOnWriteArrayList<Player>();
 	
 	public Battle(String chatid, Player player, EntityInstance entity){
 		this.chatid = chatid;
