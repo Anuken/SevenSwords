@@ -1,6 +1,6 @@
 Name: Turnip Father
-Health: 7
-Attack: 2
+health: 50
+attack: 8
 Defence: 2
 Exp: 7
-Drops: Giant_Turnip-1/15
+drops: turnip-2/15,giant_turnip-1/15

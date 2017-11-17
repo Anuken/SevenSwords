@@ -48,6 +48,7 @@ public class ObjectHandler extends Handler{
 		load();
 		for(Player p : core.players.values()){
 			p.location = getLocation(p.location.name) == null ? getLocation("default") : getLocation(p.location.name);
+			p.location.players.add(p);
 			for(ItemStack stack : p.inventory){
 				stack.item = getItem(stack.item.name);
 			}

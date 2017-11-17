@@ -18,7 +18,7 @@ import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.items.ItemType;
 import io.anuke.sevenswords.objects.*;
 import io.anuke.sevenswords.objects.Player.EquipSlot;
-import io.anuke.ucore.UCore;
+import io.anuke.ucore.util.Mathf;
 
 public class CommandRegistrator{
 	public static CommandHandler handler;
@@ -93,8 +93,8 @@ public class CommandRegistrator{
 		cmd("stats", () -> {
 			send("Level: `" + player().level + "`");
 			send("Experience: `" + format().format(player().xp) + "`");
-			send("Health: `" + player().health + "`/`" + player().maxhealth + "`");
-			send("Energy: `" + player().energy + "`/`" + player().maxenergy + "`");
+			send("Health: `" + player().health + "/" + player().maxhealth + "`");
+			send("Energy: `" + player().energy + "/" + player().maxenergy + "`");
 			send("Defense: `" + player().getDefense() + "`");
 		});
 
@@ -147,7 +147,10 @@ public class CommandRegistrator{
 				send("Item: *"+stack.item.name()+"*");
 				if(stack.item.has("description"))
 					send("_\"" + stack.item.get("description") + "\"_");
-				send("+`" + stack.item.getInt("defense") + "` Defense");
+				if(stack.item.has("defense"))
+					send("+`" + stack.item.getInt("defense") + "` Defense");
+				if(stack.item.has("attack"))
+					send("+`" + stack.item.getInt("attack") + "` Attack");
 			}, () -> {
 				send("You don't have that item in your inventory.");
 			});
@@ -168,8 +171,8 @@ public class CommandRegistrator{
 					send("`" + (energy > 0 ? "+" : "") + energy + "` *Energy*");
 				if(health != 0)
 					send("`" + (health > 0 ? "+" : "") + health + "` *HP*");
-				player().energy = UCore.clamp(player().energy + energy, 0, player().maxenergy);
-				player().health = UCore.clamp(player().health + health, 0, player().maxhealth);
+				player().energy = Mathf.clamp(player().energy + energy, 0, player().maxenergy);
+				player().health = Mathf.clamp(player().health + health, 0, player().maxhealth);
 
 				player().inventory.remove(stack);
 			}, () -> {

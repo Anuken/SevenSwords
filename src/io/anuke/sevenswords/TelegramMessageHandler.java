@@ -19,7 +19,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.updateshandlers.SentCallback;
 
-import io.anuke.ucore.bots.MessageHandler.TimedMessageHandler;
+import io.anuke.sevenswords.bots.MessageHandler.TimedMessageHandler;
 
 
 public class TelegramMessageHandler extends TimedMessageHandler{

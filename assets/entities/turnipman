@@ -1,6 +1,8 @@
 Name: Turnip Man
-Health: 5
+health: 20
 Attack: 2
 Defence: 2
 Exp: 7
-drops: turnip-1/15,wooden_sword-1
+drops: turnip-1/15,wooden_sword-1/5,wooden_shield-1
+
+

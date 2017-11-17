@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.anuke.sevenswords.Core;
+import io.anuke.sevenswords.bots.MessageHandler.MessageListener;
 import io.anuke.sevenswords.entities.Parseable;
 import io.anuke.sevenswords.objects.Player;
-import io.anuke.ucore.bots.MessageHandler.MessageListener;
 
 public class CommandHandler extends Handler implements MessageListener{
 	private String lastid;
 	protected boolean waitingForFile;
 	protected Class<?> filetype;
-	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y", "Anuke");
+	private List<String> admins = Arrays.asList("TheRealTux", "Anuken", "uw0tm8y", "Anuke", "Tux");
 	private List<Command> commands = new ArrayList<Command>();
 	private List<Command> adminCommands = new ArrayList<Command>();
 	private Player currentPlayer;

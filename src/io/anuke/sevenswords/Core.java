@@ -2,11 +2,11 @@ package io.anuke.sevenswords;
 
 import java.util.HashMap;
 
+import io.anuke.sevenswords.bots.MessageHandler.TimedMessageHandler;
 import io.anuke.sevenswords.handlers.CombatHandler;
 import io.anuke.sevenswords.handlers.CommandHandler;
 import io.anuke.sevenswords.handlers.ObjectHandler;
 import io.anuke.sevenswords.objects.Player;
-import io.anuke.ucore.bots.MessageHandler.TimedMessageHandler;
 
 public class Core{
 	public static Core core;

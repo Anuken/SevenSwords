@@ -99,8 +99,10 @@ public class CombatHandler extends Handler{
 
 			player.addItems(drops);
 
-			message.append((drops.size() != 0 ? "```" : "" )+ "\n+`" + player.battle.entity.type.exp + "` XP");
-			player.addXP(player.battle.entity.type.exp);
+			message.append((drops.size() != 0 ? "```" : "" )+ "\n+`" 
+					+ battle.entity.type.exp + "` XP");
+			
+			player.addXP(battle.entity.type.exp);
 
 			player.energy -= 5;
 			player.battle = null;
@@ -151,9 +153,10 @@ public class CombatHandler extends Handler{
 			}else if(entity.health <= 0){
 				runVictory(battle, message);
 				finished = true;
+				break;
 			}else{
-				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
-				message.append("\n" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
+				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "_" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
+				message.append("\n_" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "_" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
 				message.append("\n");
 				message.append("\nHealth ("+player.name()+"): `" + player.health + "`");
 				finished = false;
@@ -161,8 +164,6 @@ public class CombatHandler extends Handler{
 				if(i == battle.players.size())
 					message.append("\n\n*|========================|*\n\nEnemy Health: `" + entity.health + "`");
 			}
-			
-			
 		}
 
 		String string = message.toString();
