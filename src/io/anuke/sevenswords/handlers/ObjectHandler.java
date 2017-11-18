@@ -3,6 +3,7 @@ package io.anuke.sevenswords.handlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.*;
 
 public class ObjectHandler extends Handler{
-	public static final String DEFAULT_LOCATION = "the_void";
+	public static final String DEFAULT_LOCATION = "farmlands";
 	
 	public final Path basePath = Paths.get(System.getProperty("user.home"), "/Projects/SevenSwords/assets");
 	public HashMap<Class<? extends Parseable>, HashMap<String, Parseable>> objects = new HashMap<Class<? extends Parseable>, HashMap<String, Parseable>>();
@@ -21,7 +22,6 @@ public class ObjectHandler extends Handler{
 		return c.cast(objects.get(c).get(name));
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Class<Parseable> getClass(String type, String name){
 		try{
 			return (Class<Parseable>)Class.forName("io.anuke.sevenswords.objects." + type.substring(0, 1).toUpperCase() + type.substring(1));
@@ -43,6 +43,10 @@ public class ObjectHandler extends Handler{
 		return get(name, Location.class);
 	}
 	
+	public Collection<Recipe> getRecipes(){
+		return (Collection<Recipe>)(Collection)objects.get(Recipe.class).values();
+	}
+	
 	public void reload(){
 		objects.clear();
 		load();
@@ -60,6 +64,7 @@ public class ObjectHandler extends Handler{
 			loadType(Item.class);
 			loadType(Entity.class);
 			loadType(Location.class);
+			loadType(Recipe.class);
 		}catch (Exception e){
 			e.printStackTrace();
 			System.exit(-1);

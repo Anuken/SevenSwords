@@ -34,6 +34,47 @@ public class Player{
 		return Core.core.messages.getUserName(id);
 	}
 	
+	public boolean hasItems(Iterable<ItemStack> items){
+		for(ItemStack stack : items){
+			if(!hasItem(stack)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean hasItem(ItemStack stack){
+		ItemStack copy = new ItemStack(stack.item, stack.amount);
+		
+		for(ItemStack other : inventory){
+			if(other.item == copy.item){
+				copy.amount -= other.amount;
+				if(copy.amount <= 0){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public void removeItems(Iterable<ItemStack> items){
+		for(ItemStack stack : items){
+			removeItem(stack);
+		}
+	}
+	
+	public void removeItem(ItemStack stack){
+		for(ItemStack other : inventory){
+			if(other.item == stack.item){
+				other.amount -= stack.amount;
+				if(other.amount <= 0){
+					inventory.remove(other);
+				}
+				return;
+			}
+		}
+	}
+	
 	public ItemStack findItem(Predicate<ItemStack> pred){
 		for(ItemStack stack : inventory){
 			if(pred.test(stack)){
@@ -43,13 +84,12 @@ public class Player{
 		return null;
 	}
 	
-	
 	public ItemStack findItem(String name){
-		return findItem((stack)->{return stack.nameIs(name);});
+		return findItem(stack->stack.nameIs(name));
 	}
 	
 	public void useItem(String name, Consumer<ItemStack> found, Runnable notFound){
-		ItemStack item = findItem((stack)->{return stack.nameIs(name);});
+		ItemStack item = findItem(stack->stack.nameIs(name));
 		if(item != null){
 			found.accept(item);
 		}else{

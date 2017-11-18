@@ -1,18 +1,16 @@
 package io.anuke.sevenswords.objects;
 
-import io.anuke.sevenswords.entities.Parseable;
-import io.anuke.sevenswords.items.Drop;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import io.anuke.sevenswords.entities.Parseable;
+import io.anuke.sevenswords.items.Drop;
 
 public class Entity extends Parseable{
 	public String name;
 	public int health, attack, defence, exp;
 	public ArrayList<Drop> drops = new ArrayList<Drop>();
-	public HashMap<String, Boolean> properties = new HashMap<String, Boolean>();
-	public HashMap<String, String> values = new HashMap<String, String>();
 
 	public String toString(){
 		return String.format("EntityType: %s, drops: " + drops + ", maxhealth: %d, attack: %d, defence: %d, XP drop: %d", name, health, attack, defence, exp);

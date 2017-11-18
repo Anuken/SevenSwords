@@ -19,6 +19,7 @@ import io.anuke.sevenswords.items.ItemType;
 import io.anuke.sevenswords.objects.*;
 import io.anuke.sevenswords.objects.Player.EquipSlot;
 import io.anuke.ucore.util.Mathf;
+import io.anuke.ucore.util.Strings;
 
 public class CommandRegistrator{
 	public static CommandHandler handler;
@@ -43,7 +44,7 @@ public class CommandRegistrator{
 				if(loc.name.equals(string)){
 
 					if(loc == player().location){
-						send("You already are at that location.");
+						send("_You are already at that location!_");
 						return;
 					}
 
@@ -62,7 +63,7 @@ public class CommandRegistrator{
 					return;
 				}
 			}else{
-				send("Location not found. Type -locations for a list of locations.");
+				send("_Location not found. Type `-locations` for a list of locations._");
 			}
 		});
 
@@ -100,7 +101,7 @@ public class CommandRegistrator{
 
 		cmd("inventory", () -> {
 			if(player().inventory.size() == 0){
-				send("Your inventory is empty.");
+				send("_Your inventory is empty._");
 			}else{
 				send("Inventory _[" + player().name() + "]_:");
 				int i = 0;
@@ -140,6 +141,36 @@ public class CommandRegistrator{
 			}, () -> {
 				send("You don't have that item in your inventory.");
 			});
+		});
+		
+		cmd("craft", "<recipe-name>", (args) -> {
+			String name = args[0];
+			Recipe r = null;
+			for(Parseable recipe : Core.core.world.objects.get(Recipe.class).values()){
+				if(recipe.name.equals(name)){
+					r = (Recipe)recipe;
+					break;
+				}
+			}
+			
+			if(r == null){
+				send("_No recipe with that name found._");
+			}else{
+				if(player().hasItems(r.requirements)){
+					player().addItem(r.result);
+					player().removeItems(r.requirements);
+					send("_Crafted *" + r.result.amount + "x " + r.result.item.name() + "*._");
+				}else{
+					send("_You don't have the requirements for this recipe!_");
+				}
+			}
+		});
+		
+		cmd("recipes", ()->{
+			for(Recipe recipe : Core.core.world.getRecipes()){
+				send("- *" + recipe.name() + "*: " + recipe.result + " _(" 
+			+ SevenUtils.merge(recipe.requirements, ",") + ")_");
+			}
 		});
 		
 		cmd("examine", "<item-name>", (args) -> {
@@ -190,7 +221,31 @@ public class CommandRegistrator{
 
 			for(Entity type : player().location.entities){
 				if(type.name.equalsIgnoreCase(string)){
-					core().combat.beginBattle(handler.getLastChat(), player(), type);
+					core().combat.beginBattle(handler.getLastChat(), player(), type, 1);
+					return;
+				}
+			}
+
+			send("You can't see an enemy like that anywhere. You could -look to see the types of enemies here.");
+		});
+		
+		cmd("attack-amount", "<enemy> <amount>", (args) -> {
+			if(player().attacking()){
+				send("You are already in battle! Use -leave to stop the fight.");
+				return;
+			}
+			
+			if(!Strings.canParsePostiveInt(args[1])){
+				send("Amount must be a positive number!");
+				return;
+			}
+			int amount = Strings.parseInt(args[1]);
+
+			String string = args[0];
+
+			for(Entity type : player().location.entities){
+				if(type.name.equalsIgnoreCase(string)){
+					core().combat.beginBattle(handler.getLastChat(), player(), type, amount);
 					return;
 				}
 			}
@@ -367,7 +422,7 @@ public class CommandRegistrator{
 							core().world.reload();
 							send("Value \"`" + valuename + "`\" set to `" + value + "`.");
 						}catch(Exception e){
-							send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+							send("Error parsing input: " + (e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
 							e.printStackTrace();
 						}
 					}catch(IOException e){

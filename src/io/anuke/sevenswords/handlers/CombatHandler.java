@@ -3,7 +3,6 @@ package io.anuke.sevenswords.handlers;
 import java.util.ArrayList;
 
 import io.anuke.sevenswords.Core;
-import io.anuke.sevenswords.SevenUtils;
 import io.anuke.sevenswords.entities.Battle;
 import io.anuke.sevenswords.entities.EntityInstance;
 import io.anuke.sevenswords.items.ItemStack;
@@ -11,14 +10,14 @@ import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Player;
 
 public class CombatHandler extends Handler{
-	public static final int roundtime = 10000;
+	public static final int roundtime = 2000;
 
 	public CombatHandler(Core world) {
 		super(world);
 	}
 
-	public void beginBattle(String chatid, Player player, Entity type){
-		player.battle = new Battle(chatid, player, new EntityInstance(type));
+	public void beginBattle(String chatid, Player player, Entity type, int loops){
+		player.battle = new Battle(chatid, player, new EntityInstance(type), loops);
 
 		Thread thread = new Thread(new BattleTask(player.battle));
 		player.battle.thread = thread;
@@ -88,8 +87,12 @@ public class CombatHandler extends Handler{
 			}
 			
 			ArrayList<ItemStack> drops = battle.entity.generateDrops();
-			message.append("\n_" + player.name() + " is victorious!_" + (drops.size() == 0 ? "" : "\n\nDrops: ``` "));
-
+			message.append("\n_" + player.name() + " is victorious!_");
+			
+			if(drops.size() > 0){
+				message.append("\n\nDrops: ``` ");
+			}
+			
 			int i = 0;
 			for(ItemStack stack : drops){
 				if(i++ != 0)
@@ -105,32 +108,61 @@ public class CombatHandler extends Handler{
 			player.addXP(battle.entity.type.exp);
 
 			player.energy -= 5;
-			player.battle = null;
+			if(battle.index >= battle.loops)
+				player.battle = null;
 		}
 	}
 
-	private void runDefeat(Player player, StringBuilder message){
-		message.append("\n`" + player.name() + " has died.`");
-		message.append("\nEnergy depleted, health set to 50.");
+	private void runDefeat(Player player, StringBuilder message, boolean energy){
+		if(!energy){
+			message.append("\n`" + player.name() + " has died!`");
+		}else{
+			message.append("\n`" + player.name() + " has exhausted their energy and died.`");
+		}
+		message.append("\nHealth set to 50.");
 
-		player.energy = 5;
+		player.energy = player.maxenergy;
 		player.health = 50;
 		player.battle.players.remove(player);
 		player.battle = null;
 	}
 
 	private boolean runRound(Battle battle){
-		StringBuilder message = new StringBuilder("``` [Round " + ++battle.round + "] ```");
+		StringBuilder message = new StringBuilder("``` [Turn " + ++battle.round + "] ");
+		
+		if(battle.loops > 0){
+			message.append(" | Battle " + (battle.index + 1)  + "/" + battle.loops);
+		}
+		
+		EntityInstance entity = battle.entity;
+		
+		message.append("```\n");
 
 		boolean finished = true;
+		
+		for(Player player : battle.players){
+			int playerDamage = player.getAttack();
 
-		EntityInstance entity = battle.entity;
+			int playerDamaged = entity.type.attack - player.getDefense();
+			int enemyDamaged = playerDamage - entity.type.defence;
 
-		String playerstr = SevenUtils.merge(battle.players, ", ");
+			playerDamaged = Math.max(playerDamaged, 0);
+			enemyDamaged = Math.max(enemyDamaged, 0);
 
-		message.append("--*" + playerstr + "*  |  *" + entity.type.name() + "*--\n");
+			player.health -= playerDamaged;
+			entity.health -= enemyDamaged;
+		}
+		
+		for(Player player : battle.players){
+			message.append("*" + player.name() + " *`[ " + Math.max(player.health, 0) + "/"+ player.maxhealth + " ]`\n");
+		}
+		
+		message.append("\n_ -- VS --_\n\n");
+		message.append("*" + entity.type.name() + " *`[ " + Math.max(entity.health, 0) + "/"+ entity.type.health + " ]`\n");
 		
 		int i = 0;
+		
+		boolean allDead = true;
 		
 		for(Player player : battle.players){
 			
@@ -145,24 +177,23 @@ public class CombatHandler extends Handler{
 			playerDamaged = Math.max(playerDamaged, 0);
 			enemyDamaged = Math.max(enemyDamaged, 0);
 
-			player.health -= playerDamaged;
-			entity.health -= enemyDamaged;
-
 			if(player.health <= 0){
-				runDefeat(player, message);
+				runDefeat(player, message, false);
+			}else if(player.energy <= 0){
+				runDefeat(player, message, true);
 			}else if(entity.health <= 0){
 				runVictory(battle, message);
 				finished = true;
+				allDead = false;
 				break;
 			}else{
-				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" + (entity.type.defence == 0 ? "_" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
-				message.append("\n_" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" + (player.getDefense() == 0 ? "_" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
+				allDead = false;
+				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" 
+						+ (entity.type.defence == 0 ? "_" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
+				message.append("\n_" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" 
+						+ (player.getDefense() == 0 ? "_" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
 				message.append("\n");
-				message.append("\nHealth ("+player.name()+"): `" + player.health + "`");
 				finished = false;
-				
-				if(i == battle.players.size())
-					message.append("\n\n*|========================|*\n\nEnemy Health: `" + entity.health + "`");
 			}
 		}
 
@@ -173,7 +204,21 @@ public class CombatHandler extends Handler{
 		}else{
 			Core.core.messages.edit(string, battle.chatid, battle.messageid);
 		}
-
-		return finished;
+		
+		if(allDead){
+			return true;
+		}
+		
+		if(finished){
+			if(battle.loops > 1 && battle.index < battle.loops - 1){
+				battle.index ++;
+				battle.entity = new EntityInstance(battle.entity.type);
+				return false;
+			}else{
+				return true;
+			}
+		}else{
+			return false;
+		}
 	}
 }

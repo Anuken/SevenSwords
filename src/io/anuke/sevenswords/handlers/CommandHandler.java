@@ -90,7 +90,8 @@ public class CommandHandler extends Handler implements MessageListener{
 			send("_Object \"_`" + p.name + "`\"_ parsed successfully._");
 		}catch(Exception e){
 			send("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
-			System.out.println("Error parsing input: " + e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+			System.out.println("Error parsing input: " 
+					+ e.getMessage() == null ? e.getClass().getSimpleName() : e.getClass().getSimpleName() + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 		waitingForFile = false;
