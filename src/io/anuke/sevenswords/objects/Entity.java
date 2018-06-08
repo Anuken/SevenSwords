@@ -44,21 +44,27 @@ public class Entity extends Parseable{
 		for(String string : drops){
 			String[] dsplit = string.split("-");
 			String chancestring = null;
+			String amountstring = "1";
 
 			if(dsplit.length == 2){
 				chancestring = dsplit[1];
 			}else if(dsplit.length == 3){
 				chancestring = dsplit[2];
+				amountstring = dsplit[1];
 			}else{
+				amountstring = "1";
 				chancestring = "1";
 			}
 
 			double chance = 0;
-			int amount = 1;
+			int amountMin = 1, amountMax = 1;
 
-			if(dsplit.length == 3){
-				amount = Integer.parseInt(dsplit[1]);
+			if(amountstring.contains(";")){
+				String[] amountsplit = amountstring.split(";");
+				amountMin = Integer.parseInt(amountsplit[0]);
+				amountMax = Integer.parseInt(amountsplit[1]);
 			}
+			
 
 			if(chancestring.contains("/")){
 				String[] csplit = chancestring.split("/");
@@ -67,7 +73,7 @@ public class Entity extends Parseable{
 				chance = 1.0 / Double.parseDouble(chancestring);
 			}
 
-			list.add(new Drop(dsplit[0], amount, chance));
+			list.add(new Drop(dsplit[0], amountMin, amountMax, chance));
 		}
 		return list;
 	}

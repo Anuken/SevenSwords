@@ -109,6 +109,7 @@ public class CommandHandler extends Handler implements MessageListener{
 				break;
 			}
 		}
+		
 		if(admins.contains(username)){
 			for(Command command : adminCommands){
 				if(command.text.equals(message)){

@@ -8,6 +8,7 @@ import io.anuke.sevenswords.entities.EntityInstance;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.Entity;
 import io.anuke.sevenswords.objects.Player;
+import io.anuke.ucore.util.Mathf;
 
 public class CombatHandler extends Handler{
 	public static final int roundtime = 2000;
@@ -80,11 +81,7 @@ public class CombatHandler extends Handler{
 
 	private void runVictory(Battle battle, StringBuilder message){
 		
-		int s = 0;
 		for(Player player : battle.players){
-			if(s ++ != 0){
-				message.append("\n\n*|========================|*\n");
-			}
 			
 			ArrayList<ItemStack> drops = battle.entity.generateDrops();
 			message.append("\n_" + player.name() + " is victorious!_");
@@ -107,9 +104,11 @@ public class CombatHandler extends Handler{
 			
 			player.addXP(battle.entity.type.exp);
 
-			player.energy -= 5;
-			if(battle.index >= battle.loops)
+			player.energy -= Mathf.random(2, 4);
+			
+			if(battle.index >= battle.loops - 1){
 				player.battle = null;
+			}
 		}
 	}
 
@@ -188,11 +187,12 @@ public class CombatHandler extends Handler{
 				break;
 			}else{
 				allDead = false;
-				message.append("\n_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" 
-						+ (entity.type.defence == 0 ? "_" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
-				message.append("\n_" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" 
-						+ (player.getDefense() == 0 ? "_" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
 				message.append("\n");
+				message.append("_" + player.name() + " hit " + entity.type.uncappedName() + " for " + enemyDamaged + " damage!" 
+						+ (entity.type.defence == 0 ? "_" : "_ *( ⛨ " + Math.min(entity.type.defence, playerDamage) + ")*"));
+				message.append("\n");
+				message.append("_" + entity.type.name() + " hit " + player.name() + " for " + playerDamaged + " damage!" 
+						+ (player.getDefense() == 0 ? "_" : "_ *( ⛨ " + Math.min(player.getDefense(), entity.type.attack) + ")* "));
 				finished = false;
 			}
 		}

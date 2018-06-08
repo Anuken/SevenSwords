@@ -1,10 +1,7 @@
 package io.anuke.sevenswords;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -39,8 +36,7 @@ public class TelegramMessageHandler extends TimedMessageHandler{
 			System.out.println("Starting bot...");
 			
 			
-			List<String> list = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Documents/eclipse").resolve("token.dat"));
-			token = list.get(0);
+			token = System.getenv("TG_SEVENSWORDS_BOT_TOKEN");
 			
 			TelegramBotsApi api = new TelegramBotsApi();
 			bot = new Bot();

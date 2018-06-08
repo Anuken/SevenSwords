@@ -1,10 +1,11 @@
 package io.anuke.sevenswords.entities;
 
+import java.util.ArrayList;
+
 import io.anuke.sevenswords.items.Drop;
 import io.anuke.sevenswords.items.ItemStack;
 import io.anuke.sevenswords.objects.Entity;
-
-import java.util.ArrayList;
+import io.anuke.ucore.util.Mathf;
 
 public class EntityInstance{
 	public final Entity type;
@@ -19,7 +20,7 @@ public class EntityInstance{
 		ArrayList<ItemStack> list = new ArrayList<ItemStack>();
 		for(Drop drop : type.drops){
 			if(Math.random() < drop.chance){
-				list.add(new ItemStack(drop.item));
+				list.add(new ItemStack(drop.item, Mathf.random(drop.amountMin, drop.amountMax)));
 			}
 		}
 		return list;

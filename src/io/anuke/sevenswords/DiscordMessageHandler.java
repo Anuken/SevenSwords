@@ -1,17 +1,14 @@
 package io.anuke.sevenswords;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 
 import io.anuke.sevenswords.bots.MessageHandler.TimedMessageHandler;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -26,9 +23,8 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 		new Core(new DiscordMessageHandler());
 	}
 
-	public DiscordMessageHandler() throws Exception {
-		List<String> list = Files.readAllLines(Paths.get(System.getProperty("user.home"), "Documents/eclipse").resolve("token-discord.dat"));
-		token = list.get(0);
+	public DiscordMessageHandler() {
+		token = System.getProperty("token");
 
 		ClientBuilder clientBuilder = new ClientBuilder();
 		clientBuilder.withToken(token);
@@ -44,10 +40,13 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	@EventSubscriber
 	public void onMessageReceivedEvent(MessageReceivedEvent event){
 		IMessage m = event.getMessage();
-		users.put(m.getAuthor().getID(), m.getAuthor());
-		lastchannel = event.getMessage().getChannel().getID();
+		users.put(m.getAuthor().getLongID() + "", m.getAuthor());
+		lastchannel = event.getMessage().getChannel().getLongID() + "";
 		
-		listener.onMessageRecieved(m.getContent(), m.getAuthor().getName(), m.getChannel().getID(), m.getAuthor().getID(), m.getID());
+		listener.onMessageRecieved(m.getContent(), m.getAuthor().getName(), 
+				m.getChannel().getLongID() + "", 
+				m.getAuthor().getLongID() + "", 
+				m.getLongID() + "");
 	}
 
 	@Override
@@ -58,7 +57,7 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	@Override
 	public void edit(String message, String chatid, String messageid){
 		try{
-			client.getChannelByID(chatid).getMessageByID(messageid).edit(process(message));
+			client.getChannelByID(Long.parseLong(chatid)).getMessageByID(Long.parseLong(messageid)).edit(process(message));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -73,19 +72,6 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 	public String getUserName(String id){
 		return users.get(id).getName();
 	}
-	
-	String process(String message){
-		String out = "";
-		for(char c : message.toCharArray()){
-			if(c == '*'){
-				out += "**";
-			}else{
-				out += c;
-			}
-		}
-		
-		return out;
-	}
 
 	@Override
 	public void send(String message, final String id){
@@ -99,10 +85,23 @@ public class DiscordMessageHandler extends TimedMessageHandler{
 		
 		try{
 			if(message.contains("*") && !message.contains("**")) message = process(message);
-			return client.getChannelByID(chatid).sendMessage(message).getID();
+			return client.getChannelByID(Long.parseLong(chatid)).sendMessage(message).getLongID() + "";
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	String process(String message){
+		String out = "";
+		for(char c : message.toCharArray()){
+			if(c == '*'){
+				out += "**";
+			}else{
+				out += c;
+			}
+		}
+
+		return out;
 	}
 }

@@ -1,4 +1,4 @@
 name: Roast Beef
-health: 30
-energy: 30
+health: 35
+energy: 25
 type: consumable

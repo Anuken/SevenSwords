@@ -6,11 +6,12 @@ import io.anuke.sevenswords.objects.Item;
 public class Drop{
 	public final Item item;
 	public final double chance;
-	public final int quantity;
+	public final int amountMin, amountMax;
 	
-	public Drop(String item, int quantity, double chance){
+	public Drop(String item, int amountMin, int amountMax, double chance){
 		this.chance = chance;
-		this.quantity = quantity;
+		this.amountMin = amountMin;
+		this.amountMax = amountMax;
 		this.item = Core.core.world.getItem(item);
 		if(this.item == null){
 			throw new RuntimeException("Failure loading drops: item \"" + item + "\" not defined.");
@@ -18,6 +19,6 @@ public class Drop{
 	}
 	
 	public String toString(){
-		return quantity + "x " + item + " at " + (chance* 100) + " percent";
+		return amountMin + ":" + amountMax + "x " + item + " at " + (chance* 100) + " percent";
 	}
 }
