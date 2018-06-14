@@ -1,8 +1,11 @@
 package io.anuke.sevenswords;
 
-import java.io.File;
+import java.io.*;
 import java.util.HashMap;
 
+import com.badlogic.gdx.graphics.g2d.PixmapPacker.Page;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
@@ -81,27 +84,21 @@ public class TelegramMessageHandler extends TimedMessageHandler{
 	@Override
 	public void edit(String message, String chatid, String messageid){
 		try{
-			bot.editMessageTextAsync(new EditMessageText().enableMarkdown(true).setMessageId(Integer.parseInt(messageid)).setText(message).setChatId(chatid), 
-				new SentCallback<Message>(){
+			bot.executeAsync(new EditMessageText().enableMarkdown(true).setMessageId(Integer.parseInt(messageid)).setText(message).setChatId(chatid), new SentCallback<Serializable>() {
+				@Override
+				public void onResult(BotApiMethod<Serializable> method, Serializable response) {
 
-					@Override
-					public void onError(BotApiMethod<Message> arg0, TelegramApiRequestException arg1){
-						// TODO Auto-generated method stub
-						
-					}
+				}
 
-					@Override
-					public void onException(BotApiMethod<Message> arg0, Exception arg1){
-						// TODO Auto-generated method stub
-						
-					}
+				@Override
+				public void onError(BotApiMethod<Serializable> method, TelegramApiRequestException apiException) {
 
-					@Override
-					public void onResult(BotApiMethod<Message> arg0, Message arg1){
-						// TODO Auto-generated method stub
-						
-					}
-				
+				}
+
+				@Override
+				public void onException(BotApiMethod<Serializable> method, Exception exception) {
+
+				}
 			});
 		}catch(TelegramApiException e){
 			e.printStackTrace();

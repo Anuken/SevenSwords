@@ -15,11 +15,11 @@ import sx.blah.discord.handle.obj.IUser;
 public class DiscordMessageHandler extends TimedMessageHandler{
 	String token;
 	IDiscordClient client;
-	HashMap<String, IUser> users = new HashMap<String, IUser>();
+	HashMap<String, IUser> users = new HashMap<>();
 	MessageListener listener;
 	String lastchannel;
 
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) {
 		new Core(new DiscordMessageHandler());
 	}
 
