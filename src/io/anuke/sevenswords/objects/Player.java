@@ -178,6 +178,7 @@ public class Player{
 	}
 	
 	public int levelToXP(int i){
+		if(i == 0) return 0;
 		return (int)(Math.pow(i, exponent) * scale + base);
 	}
 	
