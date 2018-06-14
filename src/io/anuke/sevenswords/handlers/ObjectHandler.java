@@ -15,7 +15,7 @@ import io.anuke.sevenswords.objects.*;
 public class ObjectHandler extends Handler{
 	public static final String DEFAULT_LOCATION = "farmlands";
 	
-	public final Path basePath = Paths.get(System.getProperty("user.home"), "/Projects/SevenSwords/assets");
+	public final Path basePath = Paths.get(System.getProperty("user.home"), "/SevenSwords/assets");
 	public HashMap<Class<? extends Parseable>, HashMap<String, Parseable>> objects = new HashMap<Class<? extends Parseable>, HashMap<String, Parseable>>();
 	
 	public <T extends Parseable> T get(String name, Class<T> c){

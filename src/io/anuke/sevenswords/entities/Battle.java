@@ -11,8 +11,8 @@ public class Battle{
 	public int round;
 	public Thread thread;
 	public boolean stopFlag;
-	public CopyOnWriteArrayList<Player> players = new CopyOnWriteArrayList<Player>();
-	public int loops = 1;
+	public CopyOnWriteArrayList<Player> players = new CopyOnWriteArrayList<>();
+	public int loops;
 	public int index;
 	
 	public Battle(String chatid, Player player, EntityInstance entity, int loops){
