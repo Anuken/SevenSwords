@@ -49,7 +49,9 @@ public class CommandRegistrator{
 					}
 
 					send("- Now at *" + SevenUtils.capitalize(string) + "* -");
-					send("_There are_ `" + ((Location) loc).entities.length + "` _enemies here._");
+					if(((Location) loc).entities != null){
+						send("_There are_ `" + ((Location) loc).entities.length + "` _enemies here._");
+					}
 
 					player().location.players.remove(player());
 
