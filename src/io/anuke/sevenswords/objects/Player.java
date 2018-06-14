@@ -183,7 +183,8 @@ public class Player{
 	}
 	
 	public int xpToLevel(long xp){
-		return (int)Math.pow((Math.max(xp - base, 0))/scale, 1f/exponent);
+		if(xp <= base) return 0;
+		return (int)Math.pow((Math.max(xp, 0))/scale, 1f/exponent);
 	}
 	
 	public String toString(){

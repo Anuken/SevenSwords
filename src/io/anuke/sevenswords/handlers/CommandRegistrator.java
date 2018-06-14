@@ -137,11 +137,9 @@ public class CommandRegistrator{
 		});
 
 		cmd("equip", "<item-name>", (args) -> {
-			player().useItem(args[0], (stack) -> {
-				send(player().tryEquip(stack));
-			}, () -> {
-				send("You don't have that item in your inventory.");
-			});
+			player().useItem(args[0],
+					stack -> send(player().tryEquip(stack)),
+					() -> send("You don't have that item in your inventory."));
 		});
 		
 		cmd("craft", "<recipe-name>", (args) -> {
