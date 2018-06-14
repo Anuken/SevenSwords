@@ -62,7 +62,6 @@ public class CommandRegistrator{
 					}
 
 					player().location.players.add(player());
-					return;
 				}
 			}else{
 				send("_Location not found. Type `-locations` for a list of locations._");

@@ -36,7 +36,7 @@ task dist(type: Jar) {
 
 
 dependencies {
-	compile 'com.github.austinv11:Discord4j:2.9.3'
+	compile 'com.github.austinv11:Discord4j:2.10.1'
     compile "org.telegram:telegrambots:3.6"
 	compile 'com.github.anuken:ucore:-SNAPSHOT'
 }
