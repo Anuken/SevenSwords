@@ -14,7 +14,7 @@ import io.anuke.sevenswords.items.ItemType;
 
 public class Player{
 	public static ItemType[] equiptypes = {weapon, helm, armor, boots, amulet, offhand};
-	public static double exponent = 3, scale = 100;
+	public static double exponent = 2, scale = 100, base = 200;
 	public final String id;
 	public Location location;
 	public int health = 100, energy = 100, maxhealth = 100, maxenergy = 100;
@@ -178,23 +178,23 @@ public class Player{
 	}
 	
 	public int levelToXP(int i){
-		return (int)(Math.pow(i, exponent) * scale);
+		return (int)(Math.pow(i, exponent) * scale + base);
 	}
 	
 	public int xpToLevel(long xp){
-		return (int)Math.pow(xp/scale, 1f/exponent);
+		return (int)Math.pow((Math.max(xp - base, 0))/scale, 1f/exponent);
 	}
 	
 	public String toString(){
 		return name();
 	}
 	
-	static public enum EquipSlot{
+	public enum EquipSlot{
 		weapon("Weapon"), offhand("Off-Hand"), helm("Helm"), armor("Armor"), boots("Boots"), amulet("Amulet");
 		
 		public final String name;
 		
-		private EquipSlot(String name){
+		EquipSlot(String name){
 			this.name = name;
 		}
 	}

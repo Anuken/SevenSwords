@@ -93,7 +93,7 @@ public class CommandRegistrator{
 		});
 
 		cmd("stats", () -> {
-			send("Level: `" + player().level + "`");
+			send("Level: `" + (player().level + 1) + "`");
 			send("Experience: `" + format().format(player().xp) + "`");
 			send("Health: `" + player().health + "/" + player().maxhealth + "`");
 			send("Energy: `" + player().energy + "/" + player().maxenergy + "`");
@@ -125,7 +125,7 @@ public class CommandRegistrator{
 
 			send("```{|" + string + "|}```");
 
-			send("Level: `" + player().level + "`");
+			send("Level: `" + (player().level + 1) + "`");
 			send("XP: `" + format().format((player().xp - lxp)) + "`/`" + format().format(tolevel) + "`");
 		});
 
